@@ -1,0 +1,4 @@
+#!/bin/bash
+## [2014.01.26 Christopher]
+. init-environment
+[[ -s "$rvm_path/scripts/rvm" ]] && source "$rvm_path/scripts/rvm" # Load RVM into a shell session *as a function*

@@ -1,0 +1,3 @@
+#!/bin/bash
+. init-path
+export RAILS_EMAIL_DOMAIN_DEVTEST=christopheraugustus.com

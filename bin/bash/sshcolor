@@ -1,0 +1,12 @@
+#!/bin/sh
+if [ $# -lt 1 ]
+then
+    echo usage: "$0 <ssh script> [color]"
+    exit 1
+fi
+FGCOLOR=white
+if [ ! -z $2 ]
+then
+    FGCOLOR=$2
+fi
+xterm -title $1 -bg darkblue -fg $FGCOLOR -e $1 &

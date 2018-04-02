@@ -1,0 +1,12 @@
+#!/bin/sh
+# grep for each file found from directory
+if [ $# -lt 4 ]
+then
+    echo usage: "$0 '<find mask>' '<grep option>' '<grep expression>' '<directory>'"
+    exit 1
+fi
+cd $4
+echo "======================================="
+echo $(pwd)
+echo "---------------------------------------"
+findgrep "$1" "$2" "$3"

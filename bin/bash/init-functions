@@ -1,0 +1,114 @@
+#!/bin/bash
+# Implementation of a standardised cd stack for: bash
+
+### originally written by Steve Bennett
+### modified by Christopher 1999.11.23
+
+# pd()
+#
+# With no arguments, swaps top two dirs
+# With a numeric argument, pulls that dir to the top.
+# With a non-numeric argument, pushes that dir.
+#
+function pd()
+{
+	if [ $# -eq 0 ]
+  	then
+    	pushd >/dev/null
+  	else
+    	case "$1" in
+		[0-9]*) pushd +`expr $1 - 1` >/dev/null ;;
+		*) pushd "$1" >/dev/null ;;
+    	esac
+  	fi
+  	dirs | fmt -2 | nl
+}
+
+# od()
+#
+# With no arguments, pops top (current) dir.
+# With a numeric argument, pops that dir.
+#
+function od()
+{
+  	if [ $# -eq 0 ]
+  	then
+    	popd >/dev/null
+  	else
+    	case "$1" in
+			[0-9]*) popd +`expr $1 - 1` >/dev/null ;;
+			*) popd "$1" >/dev/null ;;
+    		esac
+  	fi
+	dirs | fmt -2 | nl
+}
+
+# Path handling functions
+#
+# _path_append PATH path
+#
+function _path_append()
+{
+    VAR=$1
+    eval VAL=\$$VAR
+    if [ "$VAL" = "" ];	then
+	export $VAR=$2
+    else
+	export $VAR=$VAL:$2
+    fi
+}
+
+#
+# _path_prepend(path)
+#
+function _path_prepend()
+{
+    VAR=$1
+    eval VAL=\$$VAR
+    if [ "$VAL" = "" ];	then
+	export $VAR=$2
+    else
+	export $VAR=$2:$VAL
+    fi
+}
+
+#
+# _path_remove(path)
+#
+function _path_remove()
+{
+  VAR=$1
+
+  eval $VAR=`eval echo \\$$VAR | sed -e "s@:$2:@:@g" \
+                           -e "s@^$2:@@g" \
+                           -e "s@:$2"'$@@g' \
+                           -e "s@^$2"'$@@g'`
+}
+
+#
+# _path_reappend PATH path
+#
+function _path_reappend()
+{
+  VAR=$1
+
+  eval $VAR=`eval echo \\$$VAR | sed -e "s@:$2:@:@g" \
+                           -e "s@^$2:@@g" \
+                           -e "s@:$2"'$@@g' \
+                           -e "s@^$2"'$@@g'`
+  eval $VAR=\$$VAR:$2
+}
+
+#
+# _path_reprepend(path)
+#
+function _path_reprepend()
+{
+  VAR=$1
+
+  eval $VAR=`eval echo \\$$VAR | sed -e "s@:$2:@:@g" \
+                           -e "s@^$2:@@g" \
+                           -e "s@:$2"'$@@g' \
+                           -e "s@^$2"'$@@g'`
+  eval $VAR=$2:\$$VAR
+}

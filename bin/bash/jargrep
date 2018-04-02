@@ -1,0 +1,14 @@
+#!/bin/sh
+# execute grep across the listings of jar files
+
+if [ $# -lt 2 ]
+then
+  echo usage: "$0 '<find args>' '<grep string>'"
+  exit 1
+fi
+
+for file in `find $1`
+do
+  echo "...grep-ing jar listing of: $file"
+  (jar tvf $file | grep $2)
+done

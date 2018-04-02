@@ -1,0 +1,4 @@
+#!/bin/sh
+# delete all symbolic links
+#
+rm `find . -type l`

@@ -1,0 +1,78 @@
+#!/bin/bash
+
+# customize bash prompt
+# orginally by Steve Bennett
+# modified by Christopher 1999.11.23
+
+# red       31
+# green     32
+# yellow    33
+# blue      34
+# magenta   35
+# cyan      36
+# white     37
+
+if [ -z "$HOSTNAME" ]; then
+  HOSTNAME=`hostname`
+fi
+
+case "$HOSTNAME" in
+ferret*) COLOR=31;;
+steveb*) COLOR=36;;
+advdev*) COLOR=33;;
+*) COLOR=32;;
+esac
+
+case $TERM in
+linux)
+###	B="^[[34m"
+###	U="^[[31m"
+###	H="^[[33m"
+###	P="^[[32m"
+###	D="^[[37m"
+  	B="`tput rmso``tput sgr0`"
+	U=`tput bold`
+	H=`tput bold`
+	P=`tput bold`
+	D=`tput bold`
+  ;;
+xterm-color)
+  X="[${COLOR}m"
+  Y="[m"
+  #TERM=xterm
+  # Set the title to the hostname
+  echo -n "]0;$HOSTNAME"
+  ;;
+ansi)
+  X="[${COLOR};1m"
+  Y="[37;0m"
+  TERM=ansi
+  ;;
+xansi)
+  X="[${COLOR};1m"
+  Y="[37m"
+  TERM=ansi
+  ;;
+xterm)
+  	B="`tput rmso``tput sgr0`"
+	U=`tput bold`
+	H=`tput bold`
+	P=`tput bold`
+	D=`tput bold`
+  ;;
+*)
+  X=
+  Y=
+  ;;
+esac
+
+NOPCH=`tput rmpch`
+
+case "$BASH_VERSION" in
+2.*) O='\['; C='\]';;
+1.*|*) O=''; C='';;
+esac
+
+# Don"t use \[ \] since readline() does very poorly
+# at updating the display
+PS1="${NOPCH}\n$O$B$C<$O$U$C\u$O$B$C@$O$H$C\h$O$B$C($O$P$C\!$O$B$C):$O$D$C\w$O$B$C>\n$O$Y$C"

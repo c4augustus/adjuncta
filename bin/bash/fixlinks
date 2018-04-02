@@ -1,0 +1,26 @@
+#!/bin/sh
+# fix symbolic links
+#
+
+if [ $# -lt 3 ]
+then
+    echo Usage: "$0 <find spec> <replacement from> <replacement to>"
+    exit 1
+fi
+
+FILES=$(find $1 -type l)
+
+for FILE in $FILES
+do
+    if [ -h $FILE ]
+    then
+        LINK=$(readlink $FILE)
+        NEWLINK=${LINK/$2/$3}
+        if [ $LINK != $NEWLINK ]
+        then
+            CMD="ln -s -f $NEWLINK $FILE"
+            echo "...fixing $FILE: <$LINK> --> <$NEWLINK>"
+            $($CMD)
+        fi
+    fi
+done

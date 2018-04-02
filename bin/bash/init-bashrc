@@ -1,0 +1,4 @@
+#!/bin/bash
+## [2003.06.26 Christopher]
+. init-aliases
+. init-functions

@@ -1,0 +1,37 @@
+#!/bin/bash
+FILESEDCOMMANDS='./findsed.sed'
+FILESEDERROR='./findsederror.out'
+if [[ -z "$1" ]]
+then
+    echo "Usage: findsed '<files>'"
+    echo "(reads sed commands from $FILESEDCOMMANDS)"
+elif [[ ! -f $FILESEDCOMMANDS ]]
+then
+    echo "MISSING required file $FILESEDCOMMANDS"
+else
+    FINDFILES=`eval find . -type f -iname '"$1"'`
+    for file in $FINDFILES; do
+    {
+        FILEREPLACED=$file.__replaced
+        sed -f $FILESEDCOMMANDS $file >$FILEREPLACED 2>$FILESEDERROR
+        SEDERROR=`cat $FILESEDERROR`
+        DIFFRESULT=`diff $file $FILEREPLACED`
+        if [[ ! -z $SEDERROR || -z $DIFFRESULT ]]
+        then
+            rm $FILEREPLACED
+            if [[ ! -z $SEDERROR ]]
+            then
+                echo "INVALID sed command in $FILESEDCOMMANDS:"
+                echo $SEDERROR
+                exit
+            fi
+            echo "ignoring: "$file
+        else
+            mv $file $file.__unreplaced
+            mv $FILEREPLACED $file
+            echo "REPLACED: "$file
+        fi
+    };
+    done;
+    rm $FILESEDERROR
+fi

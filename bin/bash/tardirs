@@ -1,0 +1,17 @@
+#!/bin/sh
+# tar up directories into each its own tar file
+#
+if [ $# -lt 2 ]
+then
+  echo Usage: "$0 <tar path> <dirs>"
+  exit 1
+fi
+TAR_PATH=$1
+ARGS=$@
+for WORD in $ARGS
+do
+    if [[ -d $WORD ]] && [[ "$WORD" != "." ]] && [[ "$WORD" != ".." ]] && [[ "$WORD" != "$TAR_PATH" ]]
+    then
+        tar cvjf $TAR_PATH/$WORD.tar.bz2 $WORD
+    fi
+done

@@ -1,0 +1,12 @@
+#!/bin/sh
+# execute command here and recursively in all subdirectories
+#
+if [ $# -lt 1 ]
+then
+  echo Usage: "$0 <command>"
+  exit 1
+fi
+COMMAND=$@
+echo ..executing command: $COMMAND
+($COMMAND)
+(recurseonly $COMMAND)

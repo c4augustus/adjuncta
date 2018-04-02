@@ -1,0 +1,14 @@
+#!/bin/sh
+# execute a command for each file found
+
+if [ $# -lt 2 ]
+then
+  echo usage: "$0 '<find args>' '<command prefix>' '<command postfix>'"
+  exit 1
+fi
+
+for file in `find $1`
+do
+  echo "...executing: $2 $file $3"
+  ($2 $file $3)
+done

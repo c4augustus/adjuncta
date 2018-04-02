@@ -1,0 +1,22 @@
+#!/bin/sh
+# recursive rename on all files
+#
+
+if [ $# -lt 2 ]
+then
+  echo Usage: "$0 <from chars> <to chars>"
+  exit 1
+fi
+
+rengrep $1 $2 '*'
+
+for file in `ls`
+do
+  if [ -d $file ]
+  then
+    echo "...recursing into subdirectory: $file"
+    cd $file
+    ($0 $1 $2)
+    cd ..
+  fi
+done

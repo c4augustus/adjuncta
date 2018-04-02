@@ -1,0 +1,13 @@
+#!/bin/sh
+# grep for each file found
+if [ $# -lt 2 ]
+then
+    echo usage: "$0 '<find mask>' '<grep option>' '<grep expression>'"
+    exit 1
+fi
+FINDCMD="find . -name '$1'"
+#echo $FINDCMD
+for FILE in `eval $FINDCMD`
+do
+    (grep $2 "${@:3}" $FILE)
+done

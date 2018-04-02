@@ -1,0 +1,3 @@
+#!/bin/bash
+# from https://unix.stackexchange.com/a/80153/283451
+echo -e ${PATH//:/\\n}

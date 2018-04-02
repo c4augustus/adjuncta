@@ -1,0 +1,21 @@
+#!/bin/sh
+# execute a script recursively on subdirectories
+#
+if [ $# -lt 1 ]
+then
+  echo Usage: "$0 <script file spec> [script directory spec]"
+  exit 1
+fi
+
+if [ $# -lt 2 ]
+then
+    SCRIPT=$1
+else
+    SCRIPT=$2/$1
+fi
+echo ..executing SCRIPT: $SCRIPT
+($SCRIPT)
+
+recurse $SCRIPT
+#
+# (end of file)

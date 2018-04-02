@@ -1,0 +1,20 @@
+#!/bin/sh
+# execute command recursively once in each immediate subdirectory
+#
+if [ $# -lt 1 ]
+then
+  echo Usage: "$0 <command>"
+  exit 1
+fi
+COMMAND=$@
+for FILE in `ls`
+do
+  if [ -d $FILE ]
+  then
+    echo "...recursing into subdirectory: $FILE"
+    cd $FILE
+    echo ..executing command: $COMMAND
+    ($COMMAND)
+    cd ..
+  fi
+done

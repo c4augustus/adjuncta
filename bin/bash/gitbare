@@ -1,0 +1,2 @@
+#!/bin/sh
+git config --bool core.bare true

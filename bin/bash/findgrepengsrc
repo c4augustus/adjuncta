@@ -1,0 +1,12 @@
+#!/bin/sh
+# grep for each file found in engine source directories
+if [ $# -lt 3 ]
+then
+    echo usage: "$0 '<find mask>' '<grep option>' '<grep expression>'"
+    exit 1
+fi
+findgrepdir "$1" "$2" "$3" ~/v/engine/code/public/beach/src
+findgrepdir "$1" "$2" "$3" ~/v/engine/code/public/coast/src
+findgrepdir "$1" "$2" "$3" ~/v/engine/code/secret/desert/src
+findgrepdir "$1" "$2" "$3" ~/v/engine/code/secret/forest/src
+findgrepdir "$1" "$2" "$3" ~/v/engine/code/secret/jungle/src

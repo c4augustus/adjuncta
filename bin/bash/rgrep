@@ -1,0 +1,27 @@
+#!/bin/sh
+# recursive grep
+
+if [ $# -lt 1 ]
+then
+  echo usage: "$0 '<grep expression>'"
+  exit 1
+fi
+
+expr=$1
+shift
+
+for arg in $*
+do
+  if [ -d $arg ]
+  then
+    $0 $expr $arg/*
+  else
+    tempstr=`grep $expr $arg`
+    if [ -n "$tempstr" ]
+    then
+      echo
+      echo $arg:
+      echo "$tempstr"
+    fi
+  fi
+done

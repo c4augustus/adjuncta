@@ -1,0 +1,9 @@
+#!/bin/sh
+
+export ANDROID_HOME=$HOME/Library/Android/sdk
+#export ANT_HOME=$HOME"/u/run/java/apache-ant-1.9.4"
+export ASTUDIO_HOME="/Applications/Android Studio.app/Contents"
+export GRADLE_HOME=$ASTUDIO_HOME/"gradle/gradle-2.14.1"
+export NDKROOT=$ANDROID_HOME"/ndk-bundle"
+
+. add-paths-android

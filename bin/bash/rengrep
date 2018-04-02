@@ -1,0 +1,25 @@
+#!/bin/bash
+# rename all files matching the pattern specified
+#
+if [ $# -lt 3 ]
+then
+    echo Usage: "$0 <from chars> <to chars> '<file mask>'"
+    exit 1
+fi
+
+LS_COMMAND="ls -d $3"
+##echo "LS_COMMAND=$LS_COMMAND"
+FILE_LIST=$($LS_COMMAND)
+##echo "FILE_LIST=$FILE_LIST"
+for FILE_NAME in $FILE_LIST
+do
+    ##echo "FILE_NAME=$FILE_NAME"
+    NEW_FILE_NAME=${FILE_NAME/$1/$2}
+    ##echo "NEW_FILE_NAME=$NEW_FILE_NAME"
+    if [ $FILE_NAME != $NEW_FILE_NAME ]
+    then
+        # rename to temp to handle just a change of case (using cygwin)
+        mv -v $FILE_NAME __$NEW_FILE_NAME
+        mv -v __$NEW_FILE_NAME $NEW_FILE_NAME
+    fi
+done

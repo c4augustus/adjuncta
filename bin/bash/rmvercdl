@@ -1,0 +1,3 @@
+#!/bin/sh
+# remove versioned cdl
+rm *-v???.cdl

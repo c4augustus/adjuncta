@@ -1,0 +1,31 @@
+#!/bin/bash
+# rchmod: recursive chmod [2003.02.22 Christopher]
+#
+if [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ]
+then
+    echo "syntax: chmod <directory bits> <file bits> <find mask>"
+else
+    FINDFILES="find . -type d -iname '$3'"
+    echo $FINDFILES
+    for DIRECTORY in `eval $FINDFILES`; do
+    {
+        if [ ${DIRECTORY%"/CVS"} != $DIRECTORY ]
+        then
+            echo "IGNORING CVS directory: $DIRECTORY"
+        else
+            chmod -v $1 $DIRECTORY
+        fi
+    };
+    done;
+    FINDFILES="find . -type f -iname '"$3"'"
+    for FILE in `eval $FINDFILES`; do
+    {
+        if [ ${FILE/"\/CVS\/"/"XXXXX"} != $FILE ]
+        then
+            echo "IGNORING CVS file: $FILE"
+        else
+            chmod -v $2 $FILE
+        fi
+    };
+    done;
+fi

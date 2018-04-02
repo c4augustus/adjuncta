@@ -1,0 +1,3 @@
+#!/bin/sh
+# recursively remove versioned cdl
+rescript rmvercdl

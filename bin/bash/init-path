@@ -1,0 +1,22 @@
+#!/bin/bash
+if [[ "$PATH_BASH_ORIGINAL" == "" ]]; then
+    export PATH_BASH_ORIGINAL=$PATH
+fi
+export PATH=$PATH_BASH_ORIGINAL
+#
+export PATH_RUN=$HOME/u/run
+#
+export rvm_path=$PATH_RUN/rvm
+export PATH_RVM_BIN=$rvm_path/bin
+export PATH=$PATH_RVM_BIN:$PATH
+#
+export PATH_CARGO=$HOME/.cargo
+export PATH_CARGO_BIN=$PATH_CARGO/bin
+export PATH=$PATH_CARGO_BIN:$PATH
+#
+export PATH_CONTENT=$HOME/v/content
+export PATH_CONTENT_BIN=$PATH_CONTENT/farm/commune/aid/bin
+export PATH=$PATH_CONTENT_BIN:$PATH
+#
+##. init-paths-android-nvpack
+##. init-paths-llvm

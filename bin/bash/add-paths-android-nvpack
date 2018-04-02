@@ -1,0 +1,9 @@
+#!/bin/sh
+
+export NVPACK_ROOT="/Users/admin/u/run/nvidia/NVPACK"
+export ANDROID_HOME=$NVPACK_ROOT"/android-sdk-macosx"
+export ANT_HOME=$NVPACK_ROOT"/apache-ant-1.8.2"
+export GRADLE_HOME=$NVPACK_ROOT"/gradle-2.9"
+export NDKROOT=$NVPACK_ROOT"/android-ndk-r15c"
+
+. add-paths-android

@@ -1,0 +1,6 @@
+s/Congregator/Babelator/g
+s/congregator/babelator/g
+s/CONGREGATOR/BABELATOR/g
+s/Custodian/Simulator/g
+s/custodian/simulator/g
+s/CUSTODIAN/SIMULATOR/g
