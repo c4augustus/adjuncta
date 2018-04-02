@@ -1,0 +1,32 @@
+#!/usr/bin/ruby
+# transcode a video into web formats [2013.09.06 Christopher]
+#
+unless (ARGV.length == 1) || (ARGV.length == 2)
+  filename_invoked = $0[/[^\/\\]+$/]
+  puts "usage: #{filename_invoked} <filename> [size WxH]"
+  exit
+end
+filename_orig = ARGV.shift
+filename_orig_base = filename_orig[/^[^\.]+/]
+filename_output_base = "#{filename_orig_base}_trans"
+arg_size = ARGV.shift
+name_command = "./ffmpeg"
+options_bitrate = "-b:v 1500k"
+options_codec_flag = "-vcodec"
+options_framerate = "-g 30"
+options_input = "-i #{filename_orig}"
+options_size = arg_size.nil? ? "" : "-s #{arg_size}"
+conversions = [
+#  {:extension => "mp4",  :options_codec => "libx264 -vpre slow -vpre baseline"},
+#  {:extension => "mp4",  :options_codec => "libx264 -vpre medium"},
+  {:extension => "mp4",  :options_codec => "libx264 -vpre hq"},
+  {:extension => "webm", :options_codec => "libvpx -acodec libvorbis -b:a 160000 -f webm"},
+  {:extension => "ogv",  :options_codec => "libtheora -acodec libvorbis -b:a 160000"}
+]
+conversions.each do |conversion|
+  filename_output = "#{filename_output_base}.#{conversion[:extension]}"
+  options_codec = "#{options_codec_flag} #{conversion[:options_codec]}"
+  string_command = "#{name_command} #{options_input} #{options_bitrate} #{options_codec} #{options_framerate} #{options_size} #{filename_output}"
+  puts string_command
+  `#{string_command}`
+end

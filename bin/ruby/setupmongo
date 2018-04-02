@@ -1,0 +1,20 @@
+#!/usr/bin/env ruby
+def system_echo(*args)
+  puts ">>#{args.join(", ")}"
+  system *args
+end
+def system_echo_required(*args)
+  unless system_echo *args
+    puts "#>FAILED: #{$0}"
+    exit
+  end
+end
+system_echo 'brew update'
+system_echo 'brew doctor'
+unless system_echo 'brew install mongodb'
+  system_echo_required 'brew upgrade mongodb'
+end
+system_echo_required 'ln -sfv /usr/local/opt/mongodb/*.plist ~/Library/LaunchAgents'
+system_echo_required 'launchctl load -w ~/Library/LaunchAgents/homebrew.mxcl.mongodb.plist'
+system_echo_required 'gem install humongous'
+system_echo_required 'humongous'

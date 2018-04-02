@@ -1,0 +1,183 @@
+#!/usr/bin/env ruby
+require 'io/console'
+require 'openssl'
+indexargnext = 0
+if (ARGV.size > indexargnext) && (ARGV[indexargnext] == "--clear")
+  indexargnext += 1
+  clearing = true
+end
+if (ARGV.size > indexargnext) && (ARGV[indexargnext] == "--force")
+  indexargnext += 1
+  forcing = true
+end
+if (ARGV.size > indexargnext) && (ARGV[indexargnext] == "--un")
+  indexargnext += 1
+  uncrushing = true
+end
+unless ARGV.size == indexargnext+1
+  puts "! syntax: #{$0} [--clear] [--force] [--un] <file-or-directory-name>"
+  exit 1
+end
+filespecsource = ARGV[indexargnext]
+filespecarchive = "#{filespecsource}.tar.bz2"
+filespecencrypted = "#{filespecsource}.enc"
+filespecdigested = "#{filespecsource}.sha"
+unless forcing || !File.exists?(filespecarchive)
+  puts "!! #{filespecarchive} already exists; aborting"
+  exit 2
+end
+if uncrushing
+  unless File.exists?(filespecencrypted)
+    puts "!! #{filespecencrypted} does not exist; cannot uncrush"
+    exit 2
+  end
+  unless forcing || !File.exists?(filespecsource)
+    puts "!! #{filespecsource} already exists; will not uncrush"
+    exit 2
+  end
+else
+  unless File.exists?(filespecsource)
+    if File.exists?(filespecencrypted)
+      uncrushing = true
+    else
+      puts "!! #{filespecsource} does not exist; cannot crush it"
+      exit 2
+    end
+  else
+    unless forcing || !File.exists?(filespecencrypted)
+      puts "!! #{filespecencrypted} already exists; will not crush"
+      exit 2
+    end
+  end
+end
+#
+print "cipher password: "
+STDOUT.flush
+cipherpass = STDIN.noecho(&:gets).chomp
+#puts "cipherpass=#{cipherpass}"
+#
+print "\ncipher salt: "
+STDOUT.flush
+ciphersalt = STDIN.noecho(&:gets).chomp
+#puts "ciphersalt=#{ciphersalt}"
+#
+pbkdfiter = 16666
+pbkdfkeylen = 32
+cipherkey = OpenSSL::PKCS5.pbkdf2_hmac_sha1(cipherpass, ciphersalt, pbkdfiter, pbkdfkeylen)
+cipheriv = "01234567012345670123456701234567"
+cipher = OpenSSL::Cipher.new('aes-256-cbc')
+digester = OpenSSL::Digest::SHA256.new
+lenread = 4096
+buffer = ""
+if uncrushing
+  cipher.decrypt
+  cipher.key = cipherkey
+  cipher.iv = cipheriv
+  bufferdecrypted = ""
+  File.open(filespecarchive, "wb") do |outf|
+    File.open(filespecencrypted, "rb") do |inf|
+      while inf.read(lenread, buffer)
+        bufferdecrypted = cipher.update(buffer)
+        ## this doesn't work so see below
+        ##digester << bufferdecrypted
+        outf << bufferdecrypted
+      end
+      outf << cipher.final
+    end
+  end
+  unless File.exists?(filespecarchive)
+    puts "!!! ERROR: failed to decrypt #{filespecarchive}"
+    exit 3
+  end
+  File.open(filespecarchive, "rb") do |inf|
+    while inf.read(lenread, buffer)
+      digester << buffer
+    end
+  end
+  if File.exists?(filespecdigested)
+    File.open(filespecdigested, "rb") do |inf|
+      digest = inf.read
+      puts "read digest <#{digest.inspect}>\n"
+      puts "digester.digest <#{digester.digest.inspect}>\n"
+      unless digest == digester.digest
+        puts "!!! ERROR: #{filespecdigested} digest does not match #{filespecarchive}"
+        exit 3
+      end
+    end
+  end
+  `tar xpvjf #{filespecarchive}`
+  unless File.exists?(filespecsource)
+    puts "!!! ERROR: failed to extract #{filespecsource}"
+    exit 3
+  end
+  puts "#{filespecsource} uncrushed from #{filespecencrypted}"
+  if clearing
+    FileUtils.rm filespecdigested
+    if File.exists?(filespecdigested)
+      puts "!!! ERROR: failed to delete #{filespecdigested}"
+      exit 3
+    else
+      puts "#{filespecdigested} deleted"
+    end
+    FileUtils.rm filespecencrypted
+    if File.exists?(filespecencrypted)
+      puts "!!! ERROR: failed to delete #{filespecencrypted}"
+      exit 3
+    else
+      puts "#{filespecencrypted} deleted"
+    end
+  end
+else
+  `tar cpvjf #{filespecarchive} #{filespecsource}`
+  unless File.exists?(filespecarchive)
+    puts "!!! ERROR: failed to create #{filespecarchive}"
+    exit 3
+  end
+  cipher.encrypt
+  cipher.key = cipherkey
+  cipher.iv = cipheriv
+  bufferencrypted = ""
+  File.open(filespecencrypted, "wb") do |outf|
+    File.open(filespecarchive, "rb") do |inf|
+      while inf.read(lenread, buffer)
+        digester << buffer
+        bufferencrypted = cipher.update(buffer)
+        outf << bufferencrypted
+      end
+      outf << cipher.final
+    end
+  end
+  File.open(filespecdigested, "wb") do |outf|
+    digest = digester.digest
+    outf << digest
+    puts "wrote digest <#{digest.inspect}>\n"
+  end
+  unless File.exists?(filespecdigested)
+    puts "!!! ERROR: failed to create #{filespecdigested}"
+    exit 3
+  end
+  puts "#{filespecarchive} digested into #{filespecdigested}"
+  unless File.exists?(filespecencrypted)
+    puts "!!! ERROR: failed to create #{filespecencrypted}"
+    exit 3
+  end
+  puts "#{filespecsource} crushed into #{filespecencrypted}"
+  if clearing
+    FileUtils.rm_rf filespecsource
+    if File.exists?(filespecsource)
+      puts "!!! ERROR: failed to delete #{filespecsource}"
+      exit 3
+    else
+      puts "#{filespecsource} deleted"
+    end
+  end
+end
+if clearing
+  FileUtils.rm filespecarchive
+  if File.exists?(filespecarchive)
+    puts "!!! ERROR: failed to delete #{filespecarchive}"
+    exit 3
+  else
+    puts "#{filespecarchive} deleted"
+  end
+end

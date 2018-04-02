@@ -1,0 +1,51 @@
+#!/usr/bin/ruby
+# create screencast [2011.11.02 Christopher]
+#
+invokednameonly = $0[/[^\/\\]+$/]
+if ( ARGV[0] == "--help" )
+    puts "usage: #{invokednameonly} [\"X window name\"]"
+    exit
+end
+xwindowname = ARGV[0] || "Desktop"
+xwindowinfo = `xwininfo -name "#{xwindowname}"`
+corners     = xwindowinfo.partition("Corners: ")[2]
+cornerul    = corners.match("\\+(-?[0-9]+)\\+(-?[0-9]+)")
+offsetx     = cornerul[1];
+offsety     = cornerul[2];
+geometry    = xwindowinfo.partition("-geometry ")[2]
+resolution  = geometry.match("([0-9]+)x([0-9]+)")
+resolutionx = resolution[1]
+resolutiony = resolution[2]
+filesuffix  = xwindowname.tr(' ()', '_')
+filename    = "screencast_#{filesuffix}_" + Time.now.strftime("%Y%m%d_%H%M%S")
+useffmpeg   = true
+if ( useffmpeg )
+    offset      = "+#{offsetx},#{offsety}"
+    fileext     = "mkv"
+    filecast    = filename + "." + fileext
+    acodec      = "libvorbis"
+    vcodec      = "huffyuv"
+    cmdcast     = "ffmpeg -f x11grab -s #{resolution} -r 10 -i :0.0#{offset} -f alsa -i pulse -vcodec #{vcodec} -acodec #{acodec} #{filecast}"
+    puts cmdcast
+    #
+    `#{cmdcast}`
+    #
+    fileext     = "ogv"
+    filefinal   = filename + "." + fileext
+    acodec      = "libvorbis"
+    vcodec      = "libtheora"
+    bitrate     = "4000000"
+    cmdconvert  = "ffmpeg -i #{filecast} -b #{bitrate} -vcodec #{vcodec} -acodec #{acodec} #{filefinal}"
+    puts cmdcast
+    #
+    `#{cmdconvert}`
+    #
+else
+    fileext    = "ogv"
+    filespec   = filename + "." + fileext
+    cmdcast = "recordmydesktop -x #{offsetx} -y #{offsety} --width #{resolutionx} --height #{resolutiony} --device pulse -o #{filespec}"
+    puts cmdcast
+    #
+    `#{cmdcast}`
+    #
+end

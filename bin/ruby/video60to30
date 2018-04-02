@@ -1,0 +1,19 @@
+#!/usr/bin/env ruby
+# convert video from 60fps to 30fps [2012.02.13 Christopher]
+#
+invokednameonly = $0[/[^\/\\]+$/]
+if ((ARGV[0] == "--help") || (ARGV.length < 1))
+    puts "usage: #{invokednameonly} <file spec>"
+    exit
+end
+filespecin  = ARGV[1]
+fileparts   = filespecin.rpartition(".")
+filename    = fileparts[0]
+fileext     = fileparts[2]
+filespecout = "#{filename}_fps60to30.#{fileext}";
+formatforce = "rawvideo"
+pixelformat = "yuv720p"
+size = "hd720"
+cmdconvert  = "ffmpeg -i #{filespecin} -f #{formatforced] -pix_fmt #{pixelformat} -s 1280x720 - | ffmpeg -f rawvideo0 #{filespecout}"
+puts cmdconvert
+`#{cmdconvert}`

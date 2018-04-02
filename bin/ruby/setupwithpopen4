@@ -1,0 +1,23 @@
+#!/usr/bin/env ruby
+def system_echo_required(*args)
+  puts ">>#{args.join(", ")}"
+  system *args
+end
+require 'rubygems'
+begin
+  require 'popen4'
+rescue LoadError
+  exit unless system_echo 'gem install popen4'
+  require 'popen4'
+end
+def popen4_echo(*args)
+end
+status = POpen4::popen4(command = 'ruby --version') do |stdout, stderr, stdin, pid|
+  puts "command     ==<#{command}>"
+  puts "stdout.gets ==<#{stdout.gets}>"
+  puts "stderr.gets ==<#{stderr.gets}>"
+  puts "stdin       ==<#{stdin}>"
+  puts "pid         ==<#{pid}>"
+end
+puts "status.class ==<#{status.class}>"
+puts "status ==<#{status}>"
