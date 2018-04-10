@@ -11,6 +11,7 @@ set vb t_vb=
 syntax on
 colorscheme wf_arc
 autocmd FileType cpp colorscheme anotherdark
+"autocmd FileType cpp colorscheme apprentice
   " ^ charc, white, orange, gold rust, salmon
 "autocmd FileType git colorscheme alduin
 autocmd FileType git colorscheme darth
@@ -18,13 +19,13 @@ autocmd FileType git colorscheme darth
 autocmd FileType groovy colorscheme antares
   " ^ black, gray, ash, green, orange
 "colorscheme DarkDefault
+autocmd FileType html colorscheme harlequin
 autocmd FileType java colorscheme jellybeans
   " ^ black, off-white, dusty-blue, orange, sand, rust, baby-blue
 "autocmd FileType kotlin colorscheme darkburn
 autocmd FileType kotlin colorscheme darkslategray
-"autocmd FileType kotlin colorscheme desert
-"autocmd FileType kotlin colorscheme desertEx
 "autocmd FileType kotlin colorscheme kalisi
+  " ^ nice except that the background is white when first loaded
 "autocmd FileType kotlin colorscheme kellys
 "autocmd FileType kotlin colorscheme kolor
 autocmd FileType markdown colorscheme marklar
@@ -33,13 +34,18 @@ autocmd FileType markdown colorscheme marklar
 "autocmd FileType python colorscheme darkbone
 "autocmd FileType python colorscheme obsidian2
 autocmd FileType python colorscheme onedark
-autocmd FileType ruby colorscheme revolution
+autocmd FileType ruby colorscheme Revolution
   " ^ midnight-blue, white, sky-blue, moccasin, dark-sea-green
+"autocmd FileType rust colorscheme anderson
+"autocmd FileType rust colorscheme desertEx
+autocmd FileType rust colorscheme zenburn
 autocmd FileType sh colorscheme shobogenzo
 autocmd FileType swift colorscheme sierra
 "autocmd FileType swift colorscheme sourcerer
+autocmd FileType toml colorscheme tabula
 autocmd FileType yaml colorscheme yeller
 autocmd FileType xml colorscheme anderson
+"autocmd FileType xml colorscheme watermark
 " ## from https://stackoverflow.com/questions/356126/how-can-you-automatically-remove-trailing-whitespace-in-vim
 highlight ExtraWhitespace ctermbg=red guibg=red
 match ExtraWhitespace /\s\+$/
