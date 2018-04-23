@@ -1,0 +1,53 @@
+- hosts: local-mac
+  connection: local
+  gather_facts: no
+  sudo: no
+  vars:
+    sdkpath: ~/Library/Android/sdk/
+    ndkdir: ndk-bundle
+    ndkpath: "{{ sdkpath + ndkdir }}"
+    ndkrev: "15.2"
+    ndkarcsite: https://dl.google.com/android/repository/
+    ndkarcbase: android-ndk-r15c
+    ndkarcstem: -darwin-x86_64.zip
+    ndkarcurl: "{{ ndkarcsite + ndkarcbase + ndkarcstem }}"
+    ndkarcpath: "{{ sdkpath + ndkarcbase }}"
+    ndkarcfile: "{{ ndkarcpath + ndkarcstem }}"
+
+  tasks:
+    - name: update Homebrew
+      homebrew: update_homebrew=yes
+
+    - name: acquire Homebrew Cask Java versions
+      homebrew_tap: name=caskroom/versions
+
+    - name: install Java 8
+      homebrew_cask: name=java8
+
+    - name: install CMake
+      homebrew: name=cmake
+
+    - name: determine existing NDK revision
+      command: grep -o "[0-9]\{1,\}\.[0-9]\{1,\}" {{ ndkpath }}/source.properties
+      register: ndkrevprev
+      check_mode: no
+      changed_when: no
+      ignore_errors: yes
+
+    - block:
+        - name: rename previous NDK directory to its actual revision
+          command: mv {{ ndkpath }} {{ ndkpath + "--" + ndkrevprev.stdout }}
+        - name: remove previous NDK directory in case the rename fails
+          command: rm -fR {{ ndkpath }}
+      when: ndkrevprev.rc == 0 and ndkrevprev.stdout != ndkrev
+      ignore_errors: yes
+
+    - block:
+        - name: download NDK
+          get_url: url={{ ndkarcurl }} dest={{ ndkarcfile }}
+        - name: extract NDK
+          unarchive: src={{ ndkarcfile }} dest={{ sdkpath }}
+        - name: rename NDK directory
+          command: mv {{ ndkarcpath }} {{ ndkpath }}
+      when: ndkrevprev.rc != 0 or ndkrevprev.stdout != ndkrev
+      ignore_errors: yes
