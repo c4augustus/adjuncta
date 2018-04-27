@@ -2,14 +2,16 @@
 
 export JAVA_HOME="$(/usr/libexec/java_home -v 1.8)"
 
-export ANDROID_PATH=$ANDROID_HOME"/tools"
+## path order matching setup by NVIDIA CodeWorks
+export ANDROID_PATH=$NDK_HOME
+export ANDROID_PATH=$ANDROID_PATH:$ANT_HOME"/bin"
+export ANDROID_PATH=$ANDROID_PATH:$GRADLE_HOME"/bin"
+export ANDROID_PATH=$ANDROID_PATH:$ANDROID_HOME"/tools"
 export ANDROID_PATH=$ANDROID_PATH:$ANDROID_HOME"/platform-tools"
 export ANDROID_PATH=$ANDROID_PATH:$ANDROID_HOME"/build-tools"
 export ANDROID_PATH=$ANDROID_PATH:$ANDROID_HOME"/extras/android/support-tools"
-export ANDROID_PATH=$ANDROID_PATH:$NDK_HOME
-export ANDROID_PATH=$ANDROID_PATH:$ANT_HOME"/bin"
-export ANDROID_PATH=$ANDROID_PATH:$GRADLE_HOME"/bin"
 
+export NDK_ROOT=$NDK_HOME
 export NDKROOT=$NDK_HOME
 
 export PATH=$ANDROID_PATH:$JAVA_HOME:$PATH

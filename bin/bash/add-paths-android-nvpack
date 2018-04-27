@@ -1,9 +1,37 @@
 #!/bin/sh
 
+export NVPACK_NDK_VERSION="android-ndk-r15c"
+export NVPACK_NDK_TOOL_VERSION="4.9"
 export NVPACK_ROOT="/Users/admin/u/run/nvidia/NVPACK"
 export ANDROID_HOME=$NVPACK_ROOT"/android-sdk-macosx"
 export ANT_HOME=$NVPACK_ROOT"/apache-ant-1.8.2"
-export GRADLE_HOME=$NVPACK_ROOT"/gradle-2.9"
-export NDK_HOME=$NVPACK_ROOT"/android-ndk-r15c"
+export GRADLE_HOME=$NVPACK_ROOT"/gradle-4.1"
+export NDK_HOME=$NVPACK_ROOT"/"$NVPACK_NDK_VERSION
 
 . add-paths-android
+
+## NOTE: the following lines are installed in ~/.bash_profile
+## by NVIDIA CodeWorks 1R7 for macOS with the default paths
+##
+##export NVPACK_ROOT="/Users/?????/NVPACK"
+
+##export PATH=$PATH:"/Users/?????/NVPACK/android-ndk-r15c"
+##export NDK_ROOT="/Users/?????/NVPACK/android-ndk-r15c"
+##export NDKROOT="/Users/?????/NVPACK/android-ndk-r15c"
+##export NVPACK_NDK_VERSION="android-ndk-r15c"
+##export NVPACK_NDK_TOOL_VERSION="4.9"
+
+##export PATH=$PATH:"/Users/?????/NVPACK/apache-ant-1.8.2/bin"
+##export ANT_HOME="/Users/?????/NVPACK/apache-ant-1.8.2"
+
+##export PATH=$PATH:"/Users/?????/NVPACK/gradle-4.1/bin"
+##export GRADLE_HOME="/Users/?????/NVPACK/gradle-4.1"
+
+##export PATH=$PATH:"/Users/?????/NVPACK/android-sdk-macosx/tools"
+##export ANDROID_HOME="/Users/?????/NVPACK/android-sdk-macosx"
+
+##export PATH=$PATH:"/Users/?????/NVPACK/android-sdk-macosx/platform-tools"
+
+##export PATH=$PATH:"/Users/?????/NVPACK/android-sdk-macosx/build-tools"
+
+##export PATH=$PATH:"/Users/?????/NVPACK/android-sdk-macosx/extras/android/support"
