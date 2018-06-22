@@ -12,16 +12,16 @@
 #
 function pd()
 {
-	if [ $# -eq 0 ]
-  	then
-    	pushd >/dev/null
-  	else
-    	case "$1" in
-		[0-9]*) pushd +`expr $1 - 1` >/dev/null ;;
-		*) pushd "$1" >/dev/null ;;
-    	esac
-  	fi
-  	dirs | fmt -2 | nl
+  if [ $# -eq 0 ]
+  then
+    pushd >/dev/null
+  else
+    case "$1" in
+      [0-9]*) pushd +"$1" >/dev/null ;;
+      *) pushd "$1" >/dev/null ;;
+    esac
+  fi
+  dirs -v
 }
 
 # od()
@@ -31,16 +31,16 @@ function pd()
 #
 function od()
 {
-  	if [ $# -eq 0 ]
-  	then
-    	popd >/dev/null
-  	else
-    	case "$1" in
-			[0-9]*) popd +`expr $1 - 1` >/dev/null ;;
-			*) popd "$1" >/dev/null ;;
-    		esac
-  	fi
-	dirs | fmt -2 | nl
+  if [ $# -eq 0 ]
+  then
+    popd >/dev/null
+  else
+    case "$1" in
+      [0-9]*) popd +"$1" >/dev/null ;;
+      *) popd "$1" >/dev/null ;;
+    esac
+  fi
+  dirs -v
 }
 
 # Path handling functions
@@ -51,10 +51,10 @@ function _path_append()
 {
     VAR=$1
     eval VAL=\$$VAR
-    if [ "$VAL" = "" ];	then
-	export $VAR=$2
+    if [ "$VAL" = "" ]; then
+  export $VAR=$2
     else
-	export $VAR=$VAL:$2
+  export $VAR=$VAL:$2
     fi
 }
 
@@ -65,10 +65,10 @@ function _path_prepend()
 {
     VAR=$1
     eval VAL=\$$VAR
-    if [ "$VAL" = "" ];	then
-	export $VAR=$2
+    if [ "$VAL" = "" ]; then
+  export $VAR=$2
     else
-	export $VAR=$2:$VAL
+  export $VAR=$2:$VAL
     fi
 }
 

@@ -2,7 +2,7 @@
 # User specific aliases and functions
 ## customized by Christopher 1999.11.17
 
-alias d='dirs | fmt -2 | nl'
+alias d='dirs -v'
 alias e='gvim $1 $2 $3 $4 $5 $6 $7 $8 $9'
 alias l='ls -AlF'
 alias m='/Applications/MacVim.app/Contents/MacOS/MacVim $*'
