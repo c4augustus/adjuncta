@@ -1,0 +1,3 @@
+#!/bin/sh
+# eliminate Unreal Engine project generated files that are git ignored
+rm -fR Binaries Intermediate Saved
