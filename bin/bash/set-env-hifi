@@ -1,0 +1,6 @@
+#!/bin/bash
+brew list cmake
+brew list openssl
+brew list qt
+export OPENSSL_ROOT_DIR=/usr/local/Cellar/openssl/1.0.2o_1
+export QT_CMAKE_PREFIX_PATH=/usr/local/Cellar/qt/5.11.1/lib/cmake
