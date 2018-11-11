@@ -1,0 +1,52 @@
+[Theme]
+; Windows - IDS_THEME_DISPLAYNAME_AERO
+DisplayName=c4dusky
+ThemeId={30A4D7D0-E8D2-467C-BC88-C9A557F57D63}
+
+[Control Panel\Desktop]
+PicturePosition=4
+
+[VisualStyles]
+Path=%SystemRoot%\Resources\Themes\Aero\AeroLite.msstyles
+ColorStyle=NormalColor
+Size=NormalSize
+AutoColorization=0
+ColorizationColor=0X7F000000
+VisualStyleVersion=10
+HighContrast=3
+
+[MasterThemeSelector]
+MTSM=RJSPBS
+
+[Control Panel\Colors]
+ActiveBorder=70 70 70
+ActiveTitle=70 70 70
+AppWorkspace=70 70 70
+Background=25 25 25
+ButtonAlternateFace=0 250 0
+ButtonDkShadow=50 50 50
+ButtonFace=100 95 90
+ButtonHilight=50 50 50
+ButtonLight=50 50 50
+ButtonShadow=120 120 120
+ButtonText=0 0 0
+GradientActiveTitle=200 200 200
+GradientInactiveTitle=120 120 120
+GrayText=60 60 60
+Hilight=200 160 80
+HilightText=0 0 0
+HotTrackingColor=240 240 100
+InactiveBorder=250 0 0
+InactiveTitle=60 60 60
+InactiveTitleText=220 110 55
+InfoText=0 0 250
+InfoWindow=50 50 50
+Menu=100 95 90
+MenuBar=0 250 0
+MenuHilight=0 0 250
+MenuText=250 0 250
+Scrollbar=80 80 80
+TitleText=240 200 80
+Window=50 50 50
+WindowFrame=0 250 250
+WindowText=240 220 180
