@@ -25,6 +25,7 @@
           command: git stash
           args:
             chdir: "{{ pathadjuncta }}"
+          ignore_errors: yes
         - name: update adjuncta
           git:
             repo: "{{ remoteadjuncta }}"
@@ -33,6 +34,7 @@
           command: git stash pop
           args:
             chdir: "{{ pathadjuncta }}"
+          ignore_errors: yes
       when: findrepoadjuncta.matched == 1
 
     - block:
