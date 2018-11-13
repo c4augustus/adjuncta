@@ -20,10 +20,19 @@
         hidden: yes
       register: findrepoadjuncta
 
-    - name: update local git repo adjuncta
-      git:
-        repo: "{{ remoteadjuncta }}"
-        dest: "{{ pathadjuncta }}"
+    - block:
+        - name: stash adjuncta
+          command: git stash
+          args:
+            chdir: "{{ pathadjuncta }}"
+        - name: update adjuncta
+          git:
+            repo: "{{ remoteadjuncta }}"
+            dest: "{{ pathadjuncta }}"
+        - name: unstash adjuncta
+          command: git stash pop
+          args:
+            chdir: "{{ pathadjuncta }}"
       when: findrepoadjuncta.matched == 1
 
     - block:
