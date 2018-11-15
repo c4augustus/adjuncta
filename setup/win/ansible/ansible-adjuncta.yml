@@ -1,0 +1,59 @@
+- hosts: local-win10
+  connection: local
+  gather_facts: no
+  sudo: yes
+  vars:
+    pathwinc: /mnt/c
+    pathusers: "{{ pathwinc }}/Users"
+    pathuser: "{{ pathusers }}/admin"
+    pathuserv: "{{ pathuser }}/v"
+    pathadjuncta: "{{ pathuserv }}/adjuncta"
+    pathvtemp: "{{ pathuserv }}/temp"
+    pathadjunctatemp: "{{ pathvtemp }}/adjuncta"
+    remoteadjuncta: https://gitlab.com/c4augustus/adjuncta
+  tasks:
+    - name: find local git repo adjuncta
+      find:
+        paths: "{{ pathadjuncta }}"
+        patterns: '.git'
+        file_type: directory
+        hidden: yes
+      register: findrepoadjuncta
+
+    - block:
+        - name: stash adjuncta
+          command: git stash
+          args:
+            chdir: "{{ pathadjuncta }}"
+          ignore_errors: yes
+        - name: update adjuncta
+          git:
+            repo: "{{ remoteadjuncta }}"
+            dest: "{{ pathadjuncta }}"
+        - name: unstash adjuncta
+          command: git stash pop
+          args:
+            chdir: "{{ pathadjuncta }}"
+          ignore_errors: yes
+      when: findrepoadjuncta.matched == 1
+
+    - block:
+        - name: remove temp clone of repo adjuncta
+          file:
+            path: "{{ pathadjunctatemp }}"
+            state: absent
+        - name: clone git repo adjuncta into temp location because this should be executing inside the adjuncta directory
+          git:
+            repo: "{{ remoteadjuncta }}"
+            dest: "{{ pathadjunctatemp }}"
+        - name: establish adjuncta directory
+          file: 
+            path: "{{ pathadjuncta }}"
+            state: directory
+        - name: copy cloned repo over existing adjuncta directory, without replacing files
+          command: cp -au {{ pathadjunctatemp }} {{ pathadjuncta}}/..
+        - name: remove temp clone of repo adjuncta
+          file:
+            path: "{{ pathadjunctatemp }}"
+            state: absent
+      when: findrepoadjuncta.matched == 0
