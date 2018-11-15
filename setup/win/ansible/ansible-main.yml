@@ -5,19 +5,35 @@
   vars:
     pathwinc: /mnt/c
     pathwinusers: "{{ pathwinc }}/Users"
+    user: admin
+    group: "{{ user }}"
+    pathhomeuser: "/home/{{ user }}"
+    pathadjuncta: "{{ pathhomeuser }}/v/adjuncta"
   tasks:
-    - name: user admin
+    - name: user "{{ user }}"
       user:
-        name: admin
-        group: admin
-        home: /home/admin
+        name: "{{ user }}"
+        group: "{{ group }}"
+        home: "{{ pathhomeuser }}"
         password: "{{ 'changepasswordnow' | password_hash('sha512') }}"
         shell: /bin/bash
         uid: 10001
-    - name: symlink /home/admin
+    - name: symlink "{{ pathhomeuser }}"
       file:
-        src: "{{ pathwinusers }}/admin"
-        dest: /home/admin
-        owner: admin
-        group: admin
+        src: "{{ pathwinusers }}/{{ user }}"
+        dest: "{{ pathhomeuser }}"
+        owner: "{{ user }}"
+        group: "{{ group }}"
         state: link
+    - name: bash configuration
+      copy:
+        src: "{{ pathadjuncta}}/config/prog/bash/_copy_to_home/"
+        dest: "{{ pathhomeuser }}"
+        owner: "{{ user }}"
+        group: "{{ group }}"
+    - name: ViM configuration
+      copy:
+        src: "{{ pathadjuncta}}/config/prog/vim/_copy_to_home/"
+        dest: "{{ pathhomeuser }}"
+        owner: "{{ user }}"
+        group: "{{ group }}"
