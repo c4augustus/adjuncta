@@ -1,0 +1,22 @@
+#!/bin/bash
+if [[ "pull" == "$1" ]]
+then
+    docker pull remie/youtransfer:stable
+elif [[ "rm" == "$1" ]]
+then
+    docker stop youtransfer
+    docker rm youtransfer
+elif [[ "run" == "$1" ]]
+then
+    mkdir -p ~/u/run/youtransfer/config
+    mkdir -p ~/u/run/youtransfer/uploads
+    docker run -d --hostname localhost --name youtransfer -p 5000:5000 -v ~/u/run/youtransfer/uploads:/opt/youtransfer/uploads -v ~/u/run/youtransfer/config:/opt/youtransfer/config remie/youtransfer:stable
+elif [[ "start" == "$1" ]]
+then
+    docker start youtransfer
+elif [[ "stop" == "$1" ]]
+then
+    docker stop youtransfer
+else
+    echo "Usage: youtransfer pull|rm|run|start|stop"
+fi
