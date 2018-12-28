@@ -10,6 +10,13 @@ export NDK_HOME=$NVPACK_ROOT"/"$NVPACK_NDK_VERSION
 
 . add-paths-android
 
+# necessary to fix UE4 projects building for Android when packaging fails with "Java heap space"
+# solution from https://answers.unrealengine.com/questions/795336/java-heap-space.html
+# and https://stackoverflow.com/questions/603785/environment-variables-in-mac-os-x
+# NOTE that 8192M does not work for my project, it needs 16384M
+export JVM_OPTS="-Xmx16384M"
+launchctl setenv JVM_OPTS $JVM_OPTS
+
 ## NOTE: the following lines are installed in ~/.bash_profile
 ## by NVIDIA CodeWorks 1R7 for macOS with the default paths
 ##
