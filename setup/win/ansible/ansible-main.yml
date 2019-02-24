@@ -4,36 +4,72 @@
   sudo: yes
   vars:
     pathwinc: /mnt/c
+    pathwind: /mnt/d
     pathwinusers: "{{ pathwinc }}/Users"
+    pathwinextra: "{{ pathwind }}"
     user: admin
     group: "{{ user }}"
-    pathhomeuser: "/home/{{ user }}"
-    pathadjuncta: "{{ pathhomeuser }}/v/adjuncta"
+    pathhome: "/home/{{ user }}"
+    pathhomeu: "{{ pathhome }}/u"
+    pathhomev: "{{ pathhome }}/v"
+    pathhomew: "{{ pathhome }}/w"
+    pathadjunctathis: "{{ pathhome }}/adjuncta"
+    pathadjunctav: "{{ pathhomev }}/adjuncta"
   tasks:
     - name: user "{{ user }}"
       user:
         name: "{{ user }}"
         group: "{{ group }}"
-        home: "{{ pathhomeuser }}"
+        home: "{{ pathhome }}"
         password: "{{ 'changepasswordnow' | password_hash('sha512') }}"
         shell: /bin/bash
         uid: 10001
-    - name: symlink "{{ pathhomeuser }}"
+    - name: symlink "{{ pathhome }}"
       file:
         src: "{{ pathwinusers }}/{{ user }}"
-        dest: "{{ pathhomeuser }}"
+        dest: "{{ pathhome }}"
         owner: "{{ user }}"
         group: "{{ group }}"
         state: link
+    - name: create "u v w" on extra drive
+      file:
+        path: "{{ pathwinextra }}/{{ pathhome }}/{{ item }}"
+        owner: "{{ user }}"
+        group: "{{ group }}"
+        state: directory
+      with_items:
+        - u
+        - v
+        - w
+    - name: symlink "~/u ~/v ~/w" on extra drive
+      file:
+        src: "{{ pathwinextra }}/{{ pathhome }}/{{ item }}"
+        dest: "{{ pathhome }}/{{ item }}"
+        owner: "{{ user }}"
+        group: "{{ group }}"
+        state: link
+      with_items:
+        - u
+        - v
+        - w
+    - name: copy adjuncta !!! EXTREMELY SLOW
+      copy:
+        src: "{{ pathadjunctathis }}"
+        dest: "{{ pathhomev }}"
+        mode: preserve
+        owner: "{{ user }}"
+        group: "{{ group }}"
     - name: bash configuration
       copy:
-        src: "{{ pathadjuncta}}/config/prog/bash/_copy_to_home/"
-        dest: "{{ pathhomeuser }}"
+        src: "{{ pathadjunctav }}/config/prog/bash/_copy_to_home/"
+        dest: "{{ pathhome }}"
+        mode: preserve
         owner: "{{ user }}"
         group: "{{ group }}"
     - name: ViM configuration
       copy:
-        src: "{{ pathadjuncta}}/config/prog/vim/_copy_to_home/"
-        dest: "{{ pathhomeuser }}"
+        src: "{{ pathadjunctav }}/config/prog/vim/_copy_to_home/"
+        dest: "{{ pathhome }}"
+        mode: preserve
         owner: "{{ user }}"
         group: "{{ group }}"
