@@ -6,8 +6,11 @@
 #   License, v. 2.0. If a copy of the MPL was not distributed with this
 #   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+# setup Ansible on macOS
+
 from __future__ import print_function
 import platform
+import re
 import subprocess
 import sys
 
@@ -56,6 +59,7 @@ def setupHomebrew():
     except OSError:
         installHomebrew()
         showBrewConfig()
+    updateHomebrew()
 
 def showBrewConfig():
     brewConfig = subprocess.Popen(["brew", "config"],
@@ -77,22 +81,57 @@ def installHomebrew():
     if result:
         abort("failed to install homebrew")
 
-def setupAnsible():
-    print("...setting up Ansible...")
-    result = subprocess.call("brew list ansible", shell=True)
+def updateHomebrew():
+    print("......updating homebrew...")
+    print("----------------------------")
+    result = subprocess.call("brew update", shell=True)
+    print("----------------------------")
     if result:
+        abort("failed to update homebrew")
+
+def setupAnsible():
+    listoutput = listAnsible()
+    if re.search("ansible", listoutput) is None:
         installAnsible()
+        listoutput = listAnsible()
+    if re.search("ansible 2.8", listoutput) is None:
+        upgradeAnsible(False)
+
+def listAnsible():
+    print("......checking ansible versions...")
+    listoutput = subprocess.check_output("brew list ansible --versions; exit 0", shell=True)
+    print(listoutput)
+    return listoutput
 
 def installAnsible():
     print("......installing ansible...")
     print("---------------------------")
-    result = subprocess.call("brew install ansible", shell=True)
+    result = subprocess.call("brew install ansible@2.8", shell=True)
     print("---------------------------")
     if result:
         abort("failed to install ansible")
 
+def upgradeAnsible(retrying):
+    print("......upgrading ansible...")
+    upoutput = subprocess.check_output("brew upgrade ansible@2.8; exit 0",
+        stderr=subprocess.STDOUT, shell=True)
+    print(upoutput)
+    if not retrying and re.search("Xcode alone is not sufficient", upoutput) is not None:
+        installXcodeSelect()
+        upgradeAnsible(True)
+
+def installXcodeSelect():
+    # TODO: improve this by not requiring the macOS GUI popup for installation
+    # (ref https://apple.stackexchange.com/questions/107307/how-can-i-install-the-command-line-tools-completely-from-the-command-line)
+    print("......installing Xcode command-line tools...")
+    print("---------------------------")
+    result = subprocess.call("xcode-select --install", shell=True)
+    print("---------------------------")
+    if result:
+        abort("failed to install Xcode command-line tools")
+
 def main():
-    print("Setup Anisble...")
+    print("Setup Ansible...")
     checkPlatform()
     setupHomebrew()
     setupAnsible()
