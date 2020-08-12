@@ -1,0 +1,3 @@
+#!/bin/bash
+keychain --nogui ~/.ssh/id_rsa
+source ~/.keychain/$HOSTNAME-sh
