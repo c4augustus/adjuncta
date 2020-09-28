@@ -13,7 +13,7 @@ else
     for file in $FINDFILES; do
     {
         FILEREPLACED=$file.__replaced
-        sed -f $FILESEDCOMMANDS $file >$FILEREPLACED 2>$FILESEDERROR
+        sed -E -f $FILESEDCOMMANDS $file >$FILEREPLACED 2>$FILESEDERROR
         SEDERROR=`cat $FILESEDERROR`
         DIFFRESULT=`diff $file $FILEREPLACED`
         if [[ ! -z $SEDERROR || -z $DIFFRESULT ]]
