@@ -9,5 +9,7 @@ FINDCMD="find . -name '$1'"
 #echo $FINDCMD
 for FILE in `eval $FINDCMD`
 do
-    (grep $2 "${@:3}" $FILE)
+### this doesn't parse on WSL
+#    (grep $2 "${@:3}" $FILE)
+    (grep $2 "${3}" $FILE)
 done
