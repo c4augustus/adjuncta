@@ -1,3 +1,12 @@
 #!/bin/bash
-keychain --nogui ~/.ssh/id_rsa
+DIR_KEY=.ssh
+cp -r ~/$DIR_KEY /tmp
+DIR_KEY_TEMP=/tmp/$DIR_KEY
+chmod 700 $DIR_KEY_TEMP
+NAME_KEY=id_rsa
+FILE_KEY_TEMP=$DIR_KEY_TEMP/$NAME_KEY
+chmod 600 $FILE_KEY_TEMP
+chmod 644 $FILE_KEY_TEMP.pub
+keychain --nogui --nolock $FILE_KEY_TEMP
+rm -R $DIR_KEY_TEMP
 source ~/.keychain/$HOSTNAME-sh
