@@ -1,7 +1,6 @@
 - hosts: local-win10
   connection: local
   gather_facts: no
-  sudo: yes
   vars:
     pathwinc: /mnt/c
     pathwind: /mnt/d
