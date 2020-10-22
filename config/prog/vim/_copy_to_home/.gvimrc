@@ -3,5 +3,5 @@
 "set guifont=LucidaTypewriter\ Bold\ 10
 "set guifont=Courier\ 10
 colorscheme wf_arc
-set guifont=Fixed\ Bold\ 10
+set guifont=GB18030\ Bitmap:h15
 set columns=72
