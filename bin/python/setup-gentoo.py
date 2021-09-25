@@ -29,6 +29,9 @@ def abort(reason):
     eprint("SETUP ABORTED: " + reason)
     sys.exit(-1)
 
+def cancel():
+    abort("canceled")
+
 # from https://stackoverflow.com/questions/5574702/how-to-print-to-stderr-in-python
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
@@ -67,7 +70,10 @@ def checkPlatform(nameRequired):
 
 def shellCommand(command):
     print("`" + command + "`")
-    return subprocess.call(command, shell=True)
+    result = subprocess.run(command, capture_output=True, shell=True, text=True)
+    if result.returncode:
+        abort(result.stderr)
+    return result
 
 def setupHomebrew():
     print("...setting up homebrew...")
@@ -139,15 +145,39 @@ def upgradeAnsible(retrying):
 
 def setupPartitions():
     print("---------------------------")
+    wiped = False
     deviceTarget = "/dev/sda"
-    if not ask_ok("TARGET DEVICE " + deviceTarget):
-       abort("canceled setup partitions")
-    result = shellCommand("sfdisk --list " + deviceTarget)
-    result = shellCommand("parted --script " + deviceTarget + " mklabel gpt")
-    result = shellCommand("sfdisk --list " + deviceTarget)
+    partitionBoot = deviceTarget + "1"
+    partitionRoot = deviceTarget + "2"
+    sizeMibBoot = "256MiB"
+    result = shellCommand("parted " + deviceTarget + " print")
+    if result.stdout.find("Partition Table: gpt") < 0:
+        if not wiped and not ask_ok("WIPE and re-partition " + deviceTarget + " to GPT"):
+            cancel()
+        shellCommand("parted --script " + deviceTarget + " mklabel gpt")
+        wiped = True
+    if result.stdout.find("genboot") < 0:
+        if not wiped and not ask_ok("CREATE boot partition " + partitionBoot):
+            cancel()
+        shellCommand("parted --script " + deviceTarget +
+                     " mkpart primary 2048s " + sizeMibBoot)
+        shellCommand("parted --script " + deviceTarget +
+                     " name 1 'genboot'")
+        shellCommand("parted --script " + deviceTarget +
+                     " set 1 boot on")
+        shellCommand("mkfs.ext4 -L GENBOOT " + partitionBoot)
+    if result.stdout.find("genroot") < 0:
+        if not wiped and not ask_ok("CREATE root partition " + partitionRoot):
+            cancel()
+        shellCommand("parted --script " + deviceTarget +
+                     " mkpart primary " + sizeMibBoot + " 100%")
+        shellCommand("parted --script " + deviceTarget +
+                     " name 2 'genroot'")
+        shellCommand("mkfs.ext4 -L GENROOT " + partitionRoot)
+        result = shellCommand("parted " + deviceTarget + " print")
+    result = shellCommand("parted " + deviceTarget + " print")
+    print(result.stdout)
     print("---------------------------")
-    if result:
-        abort("failed to setup partitions")
 
 def main():
     print("Setup Gentoo installation...")
