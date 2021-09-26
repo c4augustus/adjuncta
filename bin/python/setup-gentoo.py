@@ -69,10 +69,10 @@ def check_platform(nameRequired):
     if namePlatform != nameRequired:
         abort("only supported on " + nameRequired)
 
-def run_shell_command(command):
+def run_shell_command(command, abort_on_error=True):
     print("`" + command + "`")
     result = subprocess.run(command, capture_output=True, shell=True, text=True)
-    if result.returncode:
+    if abort_on_error and result.returncode:
         abort(result.stderr)
     return result
 
@@ -152,6 +152,7 @@ def setup_partitions():
     result = run_shell_command("parted " + devtarget + " print")
     print(result.stdout)
     print("---------------------------")
+    return (partboot,partroot)
 
 def first_file_found_matching(filepath, filename):
     with os.scandir(filepath) as it:
@@ -166,27 +167,40 @@ def abspath_of_ancestor_dir(name):
         apath = os.path.dirname(apath)
     return apath
 
-def setup_stage3():
-    print("...stage3...")
+def acquire_stage3():
+    print("...acquiring stage3...")
     print("---------------------------")
-    filepath = os.path.dirname(abspath_of_ancestor_dir("v")) + "/u/soft/open/gentoo/"
-    filename = "stage3-amd64-openrc-*.tar.xz"
+    filepath = os.path.dirname(abspath_of_ancestor_dir("v")) + "/u/soft/open/gentoo"
+    filename = "stage3-amd64-20??????T??????Z.tar.xz"
+    filere   = "^stage3-amd64-20......T......Z\.tar\.xz$"
     filespec = filepath + filename
     os.makedirs(filepath, mode=755, exist_ok=True)
-    filenamefinal = first_file_found_matching(filepath, filename)
+    filenamefinal = first_file_found_matching(filepath, filere)
     if filenamefinal == "":
-        url = "https://bouncer.gentoo.org/fetch/root/all/releases/amd64/autobuilds/" + filename
+        site = "ftp://ftp.rnl.tecnico.ulisboa.pt/pub/gentoo/gentoo-distfiles"
+        url = site + "/releases/amd64/autobuilds/current-stage3-amd64/" + filename
         run_shell_command("wget -P " + filepath + " " + url)
-        filenamefinal = first_file_found_matching(filepath, filename)
+        filenamefinal = first_file_found_matching(filepath, filere)
         if filenamefinal == "":
             abort("failed to find or download " + filename)
+    print("---------------------------")
+    return os.path.join(filepath, filenamefinal)
+
+def extract_stage3(partroot, tarspec):
+    print("...extracting stage3...")
+    print("---------------------------")
+    run_shell_command("umount -q /mnt/gentoo", abort_on_error=False)
+    run_shell_command("mount " + partroot + " /mnt/gentoo")
+    os.chdir("/mnt/gentoo")
+    run_shell_command("tar -xpvf " + tarspec +
+                      " --xattrs-include='*.*' --numeric-owner")
     print("---------------------------")
 
 def main():
     print("Setup Gentoo installation...")
     check_platform("Linux")
-    setup_partitions()
-    setup_stage3()
+    (partboot, partroot) = setup_partitions()
+    extract_stage3(partroot, acquire_stage3())
     print("...completed setup of Gentoo installation.")
 
 if __name__ == "__main__":
