@@ -20,6 +20,7 @@
 #       8. `git clone https://gitlab.com/c4augustus/adjuncta`
 #       9. `cd adjuncta/bin/python`
 
+import os
 import platform
 import re
 import subprocess
@@ -62,13 +63,13 @@ def import_or_ask_to_install(package):
         globals()[package] = importlib.import_module(package)
     return True
 
-def checkPlatform(nameRequired):
+def check_platform(nameRequired):
     namePlatform = platform.system()
     print("...running on platform " + namePlatform)
     if namePlatform != nameRequired:
         abort("only supported on " + nameRequired)
 
-def shellCommand(command):
+def run_shell_command(command):
     print("`" + command + "`")
     result = subprocess.run(command, capture_output=True, shell=True, text=True)
     if result.returncode:
@@ -83,34 +84,6 @@ def setupHomebrew():
         installHomebrew()
         showBrewConfig()
     updateHomebrew()
-
-def showBrewConfig():
-    brewConfig = subprocess.Popen(["brew", "config"],
-        stdout=subprocess.PIPE).stdout.read()
-    print("......homebrew configuration:")
-    print("-----------------------------")
-    print(brewConfig)
-    print("-----------------------------")
-
-def installHomebrew():
-    if not ask_ok("install homebrew"):
-        abort("homebrew required")
-    print("......installing homebrew...")
-    print("----------------------------")
-    result = subprocess.call(
-        "ruby -e \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)\"",
-        shell=True)
-    print("----------------------------")
-    if result:
-        abort("failed to install homebrew")
-
-def updateHomebrew():
-    print("......updating homebrew...")
-    print("----------------------------")
-    result = subprocess.call("brew update", shell=True)
-    print("----------------------------")
-    if result:
-        abort("failed to update homebrew")
 
 def setupAnsible():
     listoutput = listAnsible()
@@ -143,46 +116,77 @@ def upgradeAnsible(retrying):
         installXcodeSelect()
         upgradeAnsible(True)
 
-def setupPartitions():
+def setup_partitions():
+    print("...drive partitions...")
     print("---------------------------")
     wiped = False
-    deviceTarget = "/dev/sda"
-    partitionBoot = deviceTarget + "1"
-    partitionRoot = deviceTarget + "2"
-    sizeMibBoot = "256MiB"
-    result = shellCommand("parted " + deviceTarget + " print")
+    devtarget = "/dev/sda"
+    partboot = devtarget + "1"
+    partroot = devtarget + "2"
+    sizeboot = "256MiB"
+    result = run_shell_command("parted " + devtarget + " print")
     if result.stdout.find("Partition Table: gpt") < 0:
-        if not wiped and not ask_ok("WIPE and re-partition " + deviceTarget + " to GPT"):
+        if not wiped and not ask_ok("WIPE and re-partition " + devtarget + " to GPT"):
             cancel()
-        shellCommand("parted --script " + deviceTarget + " mklabel gpt")
+        run_shell_command("parted --script " + devtarget + " mklabel gpt")
         wiped = True
     if result.stdout.find("genboot") < 0:
-        if not wiped and not ask_ok("CREATE boot partition " + partitionBoot):
+        if not wiped and not ask_ok("CREATE boot partition " + partboot):
             cancel()
-        shellCommand("parted --script " + deviceTarget +
-                     " mkpart primary 2048s " + sizeMibBoot)
-        shellCommand("parted --script " + deviceTarget +
-                     " name 1 'genboot'")
-        shellCommand("parted --script " + deviceTarget +
-                     " set 1 boot on")
-        shellCommand("mkfs.ext4 -L GENBOOT " + partitionBoot)
+        run_shell_command("parted --script " + devtarget +
+                          " mkpart primary 2048s " + sizeboot)
+        run_shell_command("parted --script " + devtarget +
+                          " name 1 'genboot'")
+        run_shell_command("parted --script " + devtarget +
+                          " set 1 boot on")
+        run_shell_command("mkfs.ext4 -L GENBOOT " + partboot)
     if result.stdout.find("genroot") < 0:
-        if not wiped and not ask_ok("CREATE root partition " + partitionRoot):
+        if not wiped and not ask_ok("CREATE root partition " + partroot):
             cancel()
-        shellCommand("parted --script " + deviceTarget +
-                     " mkpart primary " + sizeMibBoot + " 100%")
-        shellCommand("parted --script " + deviceTarget +
-                     " name 2 'genroot'")
-        shellCommand("mkfs.ext4 -L GENROOT " + partitionRoot)
-        result = shellCommand("parted " + deviceTarget + " print")
-    result = shellCommand("parted " + deviceTarget + " print")
+        run_shell_command("parted --script " + devtarget +
+                          " mkpart primary " + sizeboot + " 100%")
+        run_shell_command("parted --script " + devtarget +
+                          " name 2 'genroot'")
+        run_shell_command("mkfs.ext4 -L GENROOT " + partroot)
+        result = run_shell_command("parted " + devtarget + " print")
+    result = run_shell_command("parted " + devtarget + " print")
     print(result.stdout)
+    print("---------------------------")
+
+def first_file_found_matching(filepath, filename):
+    with os.scandir(filepath) as it:
+        for entry in it:
+            if entry.is_file() and re.fullmatch(filename, entry.name):
+                return entry.name
+    return ""
+
+def abspath_of_ancestor_dir(name):
+    apath = os.path.abspath(".")
+    while not not apath and os.path.basename(apath) != name:
+        apath = os.path.dirname(apath)
+    return apath
+
+def setup_stage3():
+    print("...stage3...")
+    print("---------------------------")
+    filepath = os.path.dirname(abspath_of_ancestor_dir("v")) + "/u/soft/open/gentoo/"
+    filename = "stage3-amd64-openrc-*.tar.xz"
+    filespec = filepath + filename
+    os.makedirs(filepath, mode=755, exist_ok=True)
+    filenamefinal = first_file_found_matching(filepath, filename)
+    if filenamefinal == "":
+        url = "https://bouncer.gentoo.org/fetch/root/all/releases/amd64/autobuilds/" + filename
+        run_shell_command("wget -P " + filepath + " " + url)
+        filenamefinal = first_file_found_matching(filepath, filename)
+        if filenamefinal == "":
+            abort("failed to find or download " + filename)
     print("---------------------------")
 
 def main():
     print("Setup Gentoo installation...")
-    checkPlatform("Linux")
-    setupPartitions()
+    check_platform("Linux")
+    setup_partitions()
+    setup_stage3()
     print("...completed setup of Gentoo installation.")
 
 if __name__ == "__main__":
