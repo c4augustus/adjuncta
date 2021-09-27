@@ -133,12 +133,13 @@ def acquire_stage3():
     print('---------------------------')
     return os.path.join(filepath, filenamefinal)
 
-def establish_stage3(partroot):
+def establish_stage3(partroot, pathmount):
     print('...establishing stage3...')
     print('---------------------------')
-    pathmount = '/mnt/gentoo'
     run_shell_command('umount ' + pathmount, abort_on_error=False)
-    run_shell_command('mount ' + partroot + ' ' + pathmount)
+    result = run_shell_command('mount ' + partroot + ' ' + pathmount, abort_on_error=False)
+    if result.returncode and not 'already mounted' in result.stderr:
+        abort(result.stderr)
     setdiff = (set(
         ['bin', 'boot', 'dev', 'etc', 'home', 'lib', 'lib64',
         'lost+found', 'media', 'mnt', 'opt', 'proc', 'root',
@@ -153,11 +154,48 @@ def establish_stage3(partroot):
     run_shell_command('ls -alF ' + pathmount, capture=False)
     print('---------------------------')
 
+def establish_config_file_entry(filespec, key, value):
+    entry = f'{key}={value}'
+    replaced = False
+    try:
+        with open(filespec, "r") as infile:
+            lines = infile.readlines()
+        r = re.compile(f'^{key}=.+$')
+        for i, line in enumerate(lines):
+            if r.match(line):
+                if line == entry:
+                    return
+                else:
+                    lines[i] = entry
+                    replaced = True
+                    break
+    except FileNotFoundError:
+        print(f'{filespec} not found')
+        lines = []
+    if not replaced:
+        lines.append(entry)
+    filespecorig = filespec + '.orig'
+    if not os.path.isfile(filespecorig):
+        os.rename(filespec, filespecorig)
+    with open(filespec, "w") as outfile:
+        outfile.writelines(lines)
+    print(f'{filespec}: {entry}')
+
+def establish_make_conf(pathmount, pathmakeconf):
+    print(f'...establishing {pathmakeconf}...')
+    print('---------------------------')
+    establish_config_file_entry(pathmount + pathmakeconf, 'GENTOO_MIRRORS',
+        "https://ftp.rnl.tecnico.ulisboa.pt/pub/gentoo/gentoo-distfiles/ http://ftp.rnl.tecnico.ulisboa.pt/pub/gentoo/gentoo-distfiles/ ftp://ftp.rnl.tecnico.ulisboa.pt/pub/gentoo/gentoo-distfiles/ rsync://ftp.rnl.tecnico.ulisboa.pt/pub/gentoo/gentoo-distfiles/")
+    print('---------------------------')
+
 def main():
     print('Setup Gentoo installation...')
     check_platform('Linux')
+    pathmount = '/mnt/gentoo'
+    pathmakeconf = '/etc/portage/make.conf'
     (partboot, partroot) = establish_partitions()
-    establish_stage3(partroot)
+    establish_stage3(partroot, pathmount)
+    establish_make_conf(pathmount, pathmakeconf)
     print('...completed setup of Gentoo installation.')
 
 if __name__ == '__main__':
