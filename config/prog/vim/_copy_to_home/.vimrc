@@ -5,7 +5,7 @@ set noautoindent
 set nocindent
 set nowrap
 set ruler
-set runtimepath=$VIMRUNTIME,~/v/adjuncta/config/prog/vim
+set runtimepath=$VIMRUNTIME,~/z/v/adjuncta/config/prog/vim
 set tabstop=2
 set vb t_vb=
 syntax on
@@ -14,9 +14,6 @@ autocmd FileType cpp colorscheme anotherdark
 "autocmd FileType cpp colorscheme apprentice
   " ^ charc, white, orange, gold rust, salmon
 autocmd FileType css colorscheme coda
-autocmd FileType diff colorscheme atom
-  " ^ shows whitespace
-"autocmd FileType diff colorscheme badwolf
 "autocmd FileType git colorscheme alduin
 autocmd FileType git colorscheme darth
   " ^ shows trailing spaces
@@ -24,12 +21,12 @@ autocmd FileType groovy colorscheme antares
   " ^ black, gray, ash, green, orange
 "colorscheme DarkDefault
 autocmd FileType html colorscheme fokus
-autocmd FileType java colorscheme jellybeans
 autocmd FileType javascript colorscheme CandyPaper-unblack
 "autocmd FileType javascript colorscheme kib_darktango
-autocmd FileType json colorscheme carrot
+autocmd FileType java colorscheme jellybeans
   " ^ black, off-white, dusty-blue, orange, sand, rust, baby-blue
 "autocmd FileType kotlin colorscheme darkburn
+autocmd FileType json colorscheme carrot
 autocmd FileType kotlin colorscheme darkslategray
 autocmd FileType markdown colorscheme marklar
 "autocmd FileType python colorscheme Blue2
