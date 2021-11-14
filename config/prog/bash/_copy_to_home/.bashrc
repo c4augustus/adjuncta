@@ -13,9 +13,9 @@ if [ -f /etc/bash.bashrc ]; then
     . /etc/bash.bashrc
 fi
 
-export PATH=$PATH:$HOME/v/adjuncta/bin/bash
-export PATH=$PATH:$HOME/v/adjuncta/bin/python
-export PATH=$PATH:$HOME/v/adjuncta/bin/ruby
+export PATH=$PATH:$HOME/z/v/adjuncta/bin/bash
+export PATH=$PATH:$HOME/z/v/adjuncta/bin/python
+export PATH=$PATH:$HOME/z/v/adjuncta/bin/ruby
 
 . init-bashrc
 . init-prompt
