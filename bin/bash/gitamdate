@@ -1,0 +1,2 @@
+#!/bin/sh
+GIT_COMMITTER_DATE="$*" git commit --amend --no-edit --date "$*"
