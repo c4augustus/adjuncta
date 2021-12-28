@@ -1,0 +1,31 @@
+#!/bin/bash
+# rchmod: recursive chown [2021.12.28 c4augustus]
+#
+if [ -z "$1" ] || [ -z "$2" ]
+then
+    echo "syntax: chown <user:group> <find mask>"
+else
+    FINDFILES="find . -type d -iname '$2'"
+    echo $FINDFILES
+    for DIRECTORY in `eval $FINDFILES`; do
+    {
+        if [ ${DIRECTORY%"/CVS"} != $DIRECTORY ]
+        then
+            echo "IGNORING CVS directory: $DIRECTORY"
+        else
+            chown -v $1 $DIRECTORY
+        fi
+    };
+    done;
+    FINDFILES="find . -type f -iname '"$2"'"
+    for FILE in `eval $FINDFILES`; do
+    {
+        if [ ${FILE/"\/CVS\/"/"XXXXX"} != $FILE ]
+        then
+            echo "IGNORING CVS file: $FILE"
+        else
+            chown -v $1 $FILE
+        fi
+    };
+    done;
+fi
