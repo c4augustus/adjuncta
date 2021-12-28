@@ -1,0 +1,8 @@
+#!/bin/sh
+if [ $# -lt 2 ]
+then
+    echo usage: '$0 <email> "<name>"'
+    exit 1
+fi
+git config --global user.email $1
+git config --global user.name $2
