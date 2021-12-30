@@ -5,8 +5,8 @@
   vars:
     pathwinc: /mnt/c
     pathusers: "{{ pathwinc }}/Users"
-    pathuser: "{{ pathusers }}/admin"
-    pathuserv: "{{ pathuser }}/v"
+    pathuser: "{{ pathusers }}/humano"
+    pathuserv: "{{ pathuser }}/z/v"
     pathadjuncta: "{{ pathuserv }}/adjuncta"
     pathvtemp: "{{ pathuserv }}/temp"
     pathadjunctatemp: "{{ pathvtemp }}/adjuncta"
