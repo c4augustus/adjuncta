@@ -1,0 +1,2 @@
+#!/bin/sh
+scp -p 22 $1 wfadmin@wfcloudrs:$2
