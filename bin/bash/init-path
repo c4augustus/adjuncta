@@ -1,8 +1,8 @@
 #!/bin/bash
-if [[ "$PATH_BASH_ORIGINAL" == "" ]]; then
-    export PATH_BASH_ORIGINAL=$PATH
+if [[ "$ADJUNCTA_PATH_ORIGINAL" == "" ]]; then
+    export ADJUNCTA_PATH_ORIGINAL=$PATH
 fi
-export PATH=$PATH_BASH_ORIGINAL
+export PATH=$ADJUNCTA_PATH_ORIGINAL
 #
 export PATH_RUN=$HOME/u/run
 #
@@ -14,9 +14,13 @@ export PATH_CARGO=$HOME/.cargo
 export PATH_CARGO_BIN=$PATH_CARGO/bin
 export PATH=$PATH_CARGO_BIN:$PATH
 #
-export PATH_CONTENT=$HOME/v/content
-export PATH_CONTENT_BIN=$PATH_CONTENT/farm/commune/aid/bin
-export PATH=$PATH_CONTENT_BIN:$PATH
+## export PATH_CONTENT=$HOME/v/content
+## export PATH_CONTENT_BIN=$PATH_CONTENT/farm/commune/aid/bin
+## export PATH=$PATH_CONTENT_BIN:$PATH
 #
 ##. init-paths-android-nvpack
 ##. init-paths-llvm
+#
+export PATH=$ADJUNCTA_DIR/bin/ruby:$PATH
+export PATH=$ADJUNCTA_DIR/bin/python:$PATH
+export PATH=$ADJUNCTA_DIR/bin/bash:$PATH

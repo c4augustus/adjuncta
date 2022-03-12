@@ -1,0 +1,11 @@
+#!/bin/sh
+if [[ "$ADJUNCTA_DIR" == "" ]]; then
+    export ADJUNCTA_DIR="$( cd -- "$(dirname "${BASH_SOURCE[0]:-${(%):-%x}}")"/../.. >/dev/null 2>&1 ; pwd -P )"
+    . $ADJUNCTA_DIR/bin/bash/init-path
+    . init-environment
+    . init-aliases
+    . init-functions
+else
+    echo "...skipping because $0 was already executed"
+fi
+echo "ADJUNCTA_DIR == $ADJUNCTA_DIR"
