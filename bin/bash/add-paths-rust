@@ -1,0 +1,5 @@
+#!/bin/sh
+# note: same setting as installed by rustup into ~/.cargo/env
+export PATH_CARGO=$HOME/.cargo
+export PATH_CARGO_BIN=$PATH_CARGO/bin
+export PATH=$PATH_CARGO_BIN:$PATH
