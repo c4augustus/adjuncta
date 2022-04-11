@@ -1,0 +1,3 @@
+#!/bin/sh
+# configure macOS to find Android Studio JVM when it runs /usr/libexec/java_home
+sudo ln -s /Applications/Android\ Studio.app/Contents/jre /Library/Java/JavaVirtualMachines/android-studio-jre
