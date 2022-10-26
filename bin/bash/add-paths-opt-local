@@ -1,0 +1,5 @@
+#!/bin/sh
+export PATH_ADJUNCTA_OPT_LOCAL_BIN=/opt/local/bin
+export PATH_ADJUNCTA_OPT_LOCAL_SBIN=/opt/local/sbin
+export PATH=$PATH_ADJUNCTA_OPT_LOCAL_SBIN:$PATH
+export PATH=$PATH_ADJUNCTA_OPT_LOCAL_BIN:$PATH
