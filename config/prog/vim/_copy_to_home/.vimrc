@@ -1,4 +1,4 @@
-" ## customized [2018.04.01 c4augustus]
+" ## customized [2022.08.31 c4augustus]
 set expandtab
 set hls
 set noautoindent
@@ -13,8 +13,10 @@ colorscheme wf_arc
 autocmd FileType cpp colorscheme anotherdark
 "autocmd FileType cpp colorscheme apprentice
   " ^ charc, white, orange, gold rust, salmon
+autocmd FileType cs colorscheme cobaltish
 autocmd FileType css colorscheme coda
 "autocmd FileType git colorscheme alduin
+autocmd FileType elixir colorscheme ego
 autocmd FileType git colorscheme darth
   " ^ shows trailing spaces
 autocmd FileType groovy colorscheme antares
