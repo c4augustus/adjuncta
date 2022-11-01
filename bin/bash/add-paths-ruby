@@ -1,0 +1,13 @@
+#!/bin/sh
+
+#   Copyright © 2022 Christopher Augustus
+#
+#   This Source Code Form is subject to the terms of the Mozilla Public
+#   License, v. 2.0. If a copy of the MPL was not distributed with this
+#   file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+export rvm_path=$PATH_RUN/rvm
+export PATH_RVM_BIN=$rvm_path/bin
+export PATH=$PATH_RVM_BIN:$PATH
+export PATH_ADJUNCTA_BIN_RUBY=$ADJUNCTA_DIR/bin/ruby
+export PATH=$ADJUNCTA_DIR/bin/ruby:$PATH
