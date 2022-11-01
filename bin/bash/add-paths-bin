@@ -1,7 +1,17 @@
 #!/bin/sh
+
+#   Copyright © 2022 Christopher Augustus
+#
+#   This Source Code Form is subject to the terms of the Mozilla Public
+#   License, v. 2.0. If a copy of the MPL was not distributed with this
+#   file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 export PATH_ADJUNCTA_BIN_BASH=$ADJUNCTA_DIR/bin/bash
 export PATH_ADJUNCTA_BIN_PYTHON=$ADJUNCTA_DIR/bin/python
-export PATH_ADJUNCTA_BIN_RUBY=$ADJUNCTA_DIR/bin/ruby
-export PATH=$PATH_ADJUNCTA_BIN_RUBY:$PATH
 export PATH=$PATH_ADJUNCTA_BIN_PYTHON:$PATH
 export PATH=$PATH_ADJUNCTA_BIN_BASH:$PATH
+UNAMER=$(uname -r)
+if [ "$UNAMER" != "${UNAMER%Microsoft}" ]; then
+  export PATH_ADJUNCTA_BIN_WSL=$ADJUNCTA_DIR/bin/wsl
+  export PATH=$PATH_ADJUNCTA_BIN_WSL:$PATH
+fi
