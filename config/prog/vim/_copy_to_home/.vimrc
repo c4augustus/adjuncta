@@ -13,10 +13,12 @@ colorscheme wf_arc
 autocmd FileType cpp colorscheme anotherdark
 "autocmd FileType cpp colorscheme apprentice
   " ^ charc, white, orange, gold rust, salmon
+autocmd FileType clojure colorscheme candyman
 autocmd FileType cs colorscheme cobaltish
 autocmd FileType css colorscheme coda
 "autocmd FileType git colorscheme alduin
 autocmd FileType elixir colorscheme ego
+autocmd FileType erlang colorscheme ego
 autocmd FileType git colorscheme darth
   " ^ shows trailing spaces
 autocmd FileType groovy colorscheme antares
