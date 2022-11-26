@@ -1,0 +1,21 @@
+#!/bin/sh
+# build and install Racket fork of ChezScheme on macOS M1
+# based on https://github.com/cisco/ChezScheme/issues/544
+if [ ! -f /opt/local/include/gmp.h ]; then
+  sudo port install gmp
+fi
+DIR_RACKETCHEZ=racketchez
+if [ ! -d $DIR_RACKETCHEZ ]; then
+  mkdir -p $DIR_RACKETCHEZ
+  git clone https://github.com/racket/ChezScheme $DIR_RACKETCHEZ
+fi
+cd $DIR_RACKETCHEZ
+git submodule update --init --recursive
+./configure --pb
+make tarm64osx.bootquick
+PATH_RACKETCHEZ=~/z/u/run/$DIR_RACKETCHEZ
+./configure --threads --installschemename=chez --installprefix=$PATH_RACKETCHEZ
+make -j10
+make install
+export SCHEMEHEAPDIRS=$PATH_RACKETCHEZ/lib/csv%v/%m
+echo '(+ 1 1)' | $PATH_RACKETCHEZ/bin/chez -q # should print 2
