@@ -17,8 +17,12 @@ autocmd FileType clojure colorscheme candyman
 autocmd FileType cs colorscheme cobaltish
 autocmd FileType css colorscheme coda
 "autocmd FileType git colorscheme alduin
-autocmd FileType elixir colorscheme ego
-autocmd FileType erlang colorscheme ego
+autocmd FileType elixir colorscheme earendel
+"autocmd FileType elixir colorscheme ego
+"autocmd FileType elixir colorscheme ekinivim
+autocmd FileType erlang colorscheme ecostation
+autocmd FileType fsharp colorscheme navajo-night
+"autocmd FileType fsharp colorscheme no_quarter
 autocmd FileType git colorscheme darth
   " ^ shows trailing spaces
 autocmd FileType groovy colorscheme antares
@@ -42,6 +46,7 @@ autocmd FileType ruby colorscheme Revolution
   " ^ midnight-blue, white, sky-blue, moccasin, dark-sea-green
 "autocmd FileType rust colorscheme desertEx
 autocmd FileType rust colorscheme zenburn
+"autocmd FileType rust colorscheme nefertiti
 autocmd FileType sass colorscheme asmdev
 autocmd FileType scss colorscheme asmdev
 autocmd FileType sh colorscheme shobogenzo
