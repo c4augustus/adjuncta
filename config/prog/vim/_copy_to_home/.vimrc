@@ -10,13 +10,11 @@ set tabstop=2
 set vb t_vb=
 syntax on
 colorscheme wf_arc
+autocmd FileType c colorscheme anotherdark
 autocmd FileType cpp colorscheme anotherdark
-"autocmd FileType cpp colorscheme apprentice
-  " ^ charc, white, orange, gold rust, salmon
 autocmd FileType clojure colorscheme candyman
 autocmd FileType cs colorscheme cobaltish
 autocmd FileType css colorscheme coda
-"autocmd FileType git colorscheme alduin
 autocmd FileType elixir colorscheme earendel
 "autocmd FileType elixir colorscheme ego
 "autocmd FileType elixir colorscheme ekinivim
@@ -27,25 +25,25 @@ autocmd FileType git colorscheme darth
   " ^ shows trailing spaces
 autocmd FileType groovy colorscheme antares
   " ^ black, gray, ash, green, orange
-"colorscheme DarkDefault
 autocmd FileType html colorscheme fokus
+autocmd FileType idris colorscheme onedark
+"autocmd FileType idris colorscheme colorsbox-steighties
 autocmd FileType javascript colorscheme CandyPaper-unblack
 "autocmd FileType javascript colorscheme kib_darktango
 autocmd FileType java colorscheme jellybeans
   " ^ black, off-white, dusty-blue, orange, sand, rust, baby-blue
-"autocmd FileType kotlin colorscheme darkburn
 autocmd FileType json colorscheme carrot
 autocmd FileType kotlin colorscheme darkslategray
+"autocmd FileType kotlin colorscheme darkburn
 autocmd FileType markdown colorscheme marklar
-"autocmd FileType python colorscheme Blue2
+autocmd FileType python colorscheme breeze
 "autocmd FileType python colorscheme Dark
 "autocmd FileType python colorscheme darkbone
 "autocmd FileType python colorscheme obsidian2
-autocmd FileType python colorscheme onedark
 autocmd FileType ruby colorscheme Revolution
   " ^ midnight-blue, white, sky-blue, moccasin, dark-sea-green
-"autocmd FileType rust colorscheme desertEx
 autocmd FileType rust colorscheme zenburn
+"autocmd FileType rust colorscheme desertEx
 "autocmd FileType rust colorscheme nefertiti
 autocmd FileType sass colorscheme asmdev
 autocmd FileType scss colorscheme asmdev
