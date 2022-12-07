@@ -1,0 +1,10 @@
+#!/bin/sh
+# build and install Idris2 into ~/.idris2 (default)
+# based on https://github.com/idris-lang/Idris2/INSTALL.md
+make clean
+export SCHEME=chez
+make bootstrap
+make install
+make install-libdocs
+make all
+make test
