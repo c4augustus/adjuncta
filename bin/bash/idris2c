@@ -1,0 +1,8 @@
+#!/bin/sh
+if [ "" == "$1" ]; then
+    echo "Usage: idris2c '<filename without assumed extension .idr>'"
+    exit 1
+fi
+CMD="IDRIS2_CG=refc idris2 $1.idr -S -o $1.c"
+echo $CMD
+eval $CMD
