@@ -1,11 +1,16 @@
 #!/bin/sh
-export PATH_RUN_IDRIS=$PATH_RUN/idris2
+export IDRIS2_PREFIX=$PATH_RUN/idris2
+export PATH_RUN_IDRIS=$IDRIS2_PREFIX
 export PATH_RUN_IDRIS_BIN=$PATH_RUN_IDRIS/bin
 export PATH_RUN_IDRIS_LIB=$PATH_RUN_IDRIS/lib
 export PATH=$PATH_RUN_IDRIS_BIN:$PATH
 case $(uname) in
-  Darwin) # NOTE: this may not work or be necessary with newer macOS due to its SIP
-    export DYLD_LIBRARY_PATH=$PATH_RUN_IDRIS_LIB:$DYLD_LIBRARY_PATH
+  Darwin)
+    export PATH_MACPORTS_INCLUDE=/opt/local/include
+    export PATH_MACPORTS_LIB=/opt/local/lib
+    export CPATH=$PATH_MACPORTS_INCLUDE:$PATH_MACPORTS_LIB # needed to find gmp when compiling Idris to C
+    export DYLD_LIBRARY_PATH=$PATH_RUN_IDRIS_LIB:$PATH_MACPORTS_LIB:$DYLD_LIBRARY_PATH
+    export IDRIS2_LIBS=$PATH_MACPORTS_LIB
     ;;
   *) # assume POSIX
     export LD_LIBRARY_PATH=$PATH_RUN_IDRIS_LIB:$LD_LIBRARY_PATH
