@@ -1,0 +1,8 @@
+#!/bin/sh
+if [ "" == "$1" ]; then
+    echo "Usage: idris2x '<filename without assumed extension .idr>'"
+    exit 1
+fi
+CMD="idris2 $1.idr -o $1"
+echo $CMD
+eval $CMD
