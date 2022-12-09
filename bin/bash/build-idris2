@@ -1,10 +1,10 @@
 #!/bin/sh
-# build and install Idris2 into ~/.idris2 (default) or $IDRIS2_PREFIX
+# build and install Idris2 into $PATH_RUN_IDRIS (not default ~/.idris2)
+# assuming the environment vars established in add-paths-idris
 # based on https://github.com/idris-lang/Idris2/INSTALL.md
-# and assumes environment established in add-paths-idris
-export PREFIX=$IDRIS2_PREFIX
-make clean
+export PREFIX=$PATH_RUN_IDRIS
 export SCHEME=chez
+make clean
 make bootstrap
 make install
 make install-libdocs

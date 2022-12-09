@@ -1,18 +1,13 @@
 #!/bin/sh
-export IDRIS2_PREFIX=$PATH_RUN/idris2
-export PATH_RUN_IDRIS=$IDRIS2_PREFIX
+export PATH_RUN_IDRIS=$PATH_RUN/idris2
 export PATH_RUN_IDRIS_BIN=$PATH_RUN_IDRIS/bin
-export PATH_RUN_IDRIS_LIB=$PATH_RUN_IDRIS/lib
 export PATH=$PATH_RUN_IDRIS_BIN:$PATH
 case $(uname) in
   Darwin)
-    export PATH_MACPORTS_INCLUDE=/opt/local/include
-    export PATH_MACPORTS_LIB=/opt/local/lib
-    export CPATH=$PATH_MACPORTS_INCLUDE:$PATH_MACPORTS_LIB # needed to find gmp when compiling Idris to C
-    export DYLD_LIBRARY_PATH=$PATH_RUN_IDRIS_LIB:$PATH_MACPORTS_LIB:$DYLD_LIBRARY_PATH
-    export IDRIS2_LIBS=$PATH_MACPORTS_LIB
+    # needed to find gmp installed by MacPorts when building Idris2 and compiling Idris2 to C
+    export CPATH=/opt/local/include
+    export IDRIS2_LIBS=/opt/local/lib
     ;;
   *) # assume POSIX
-    export LD_LIBRARY_PATH=$PATH_RUN_IDRIS_LIB:$LD_LIBRARY_PATH
     ;;
 esac
