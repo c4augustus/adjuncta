@@ -46,6 +46,7 @@ autocmd FileType rust colorscheme zenburn
 "autocmd FileType rust colorscheme desertEx
 "autocmd FileType rust colorscheme nefertiti
 autocmd FileType sass colorscheme asmdev
+autocmd FileType scheme colorscheme chance-of-storm
 autocmd FileType scss colorscheme asmdev
 autocmd FileType sh colorscheme shobogenzo
 autocmd FileType swift colorscheme sierra
