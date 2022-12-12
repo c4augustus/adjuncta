@@ -1,0 +1,8 @@
+#!/bin/sh
+# build and install Gerbil Scheme into $PATH_RUN/gerbil
+# assuming the environment vars established in add-paths-gambit
+# based on https://cons.io/guide/#build-instructions
+export GERBIL_BUILD_CORES=4
+./configure --prefix=$PATH_RUN/gerbil --with-gambit=$PATH_RUN_GAMBIT
+./build.sh
+./install
