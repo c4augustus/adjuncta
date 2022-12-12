@@ -1,0 +1,6 @@
+#!/bin/sh
+# build and install Gambit Scheme into $PATH_RUN_GAMBIT (not default /usr/local/Gambit)
+# assuming the environment vars established in add-paths-gambit
+# based on https://github.com/gambit/gambit/blob/master/INSTALL.txt
+./configure --prefix=$PATH_RUN_GAMBIT
+make install -j8
