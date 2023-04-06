@@ -1,0 +1,10 @@
+#!/bin/sh
+case $(uname) in
+    Darwin)
+        export ANDROID_HOME=$HOME/Library/Android/sdk
+        export JAVA_HOME="$(/usr/libexec/java_home)"
+        ;;
+    *) # assume "Linux"
+        ;;
+esac
+export PATH=$JAVA_HOME:$PATH

@@ -3,10 +3,9 @@ case $(uname) in
     Darwin)
         export ANDROID_HOME=$HOME/Library/Android/sdk
         export ASTUDIO_HOME="/Applications/Android Studio.app/Contents"
-        export JAVA_HOME=$ASTUDIO_HOME/jre/Contents/home
-        export NDK_HOME=$ANDROID_HOME/ndk-bundle
+        export JAVA_HOME=$ASTUDIO_HOME/jbr/Contents/home
         ;;
     *) # assume "Linux"
         ;;
 esac
-#. add-paths-android
+export PATH=$JAVA_HOME:$PATH

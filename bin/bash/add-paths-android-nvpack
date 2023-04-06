@@ -42,3 +42,16 @@ launchctl setenv JVM_OPTS $JVM_OPTS
 ##export PATH=$PATH:"/Users/?????/NVPACK/android-sdk-macosx/build-tools"
 
 ##export PATH=$PATH:"/Users/?????/NVPACK/android-sdk-macosx/extras/android/support"
+
+### MOVED FROM add-paths-android, probably deprecated
+## path order matching setup by NVIDIA CodeWorks
+export ANDROID_PATH=$NDK_HOME
+export ANDROID_PATH=$ANDROID_PATH:$ANT_HOME"/bin"
+export ANDROID_PATH=$ANDROID_PATH:$GRADLE_HOME"/bin"
+export ANDROID_PATH=$ANDROID_PATH:$ANDROID_HOME"/tools"
+export ANDROID_PATH=$ANDROID_PATH:$ANDROID_HOME"/platform-tools"
+export ANDROID_PATH=$ANDROID_PATH:$ANDROID_HOME"/build-tools"
+export ANDROID_PATH=$ANDROID_PATH:$ANDROID_HOME"/extras/android/support-tools"
+
+export NDK_ROOT=$NDK_HOME
+export NDKROOT=$NDK_HOME
