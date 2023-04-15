@@ -20,7 +20,7 @@ esac
 export PATH_RUN=$HOME/z/u/run
 export PATH_ADJUNCTA_BIN_BASH=$ADJUNCTA_DIR/bin/bash
 . $PATH_ADJUNCTA_BIN_BASH/add-paths-opt-local
-. $PATH_ADJUNCTA_BIN_BASH/add-paths-android-console
+. $PATH_ADJUNCTA_BIN_BASH/add-paths-android-studio
 . $PATH_ADJUNCTA_BIN_BASH/add-paths-idris
 . $PATH_ADJUNCTA_BIN_BASH/add-paths-chibi
 . $PATH_ADJUNCTA_BIN_BASH/add-paths-gerbil
