@@ -1,4 +1,4 @@
-" ## customized [2022.08.31 c4augustus]
+" ## customized [2023.06.24 c4augustus]
 set expandtab
 set hls
 set noautoindent
@@ -10,6 +10,24 @@ set tabstop=2
 set vb t_vb=
 syntax on
 colorscheme wf_arc
+"
+" ## TRAILING WHITESPACE
+set list listchars=trail:▪,extends:>
+" EXAMPLE TRAILING WHITESPACE:      
+" ## from https://stackoverflow.com/a/13795287/8022360
+" ## FYI, the red background is not showing up
+highlight ExtraWhitespace ctermbg=red guibg=red
+match ExtraWhitespace /\s\+$/
+autocmd BufWinEnter * match ExtraWhitespace /\s\+$/
+autocmd InsertEnter * match ExtraWhitespace /\s\+\%#\@<!$/
+autocmd InsertLeave * match ExtraWhitespace /\s\+$/
+autocmd BufWinLeave * call clearmatches()
+function! TrimWhiteSpace()
+    %s/\s\+$//e
+endfunction
+" ## DISABLED BECAUSE IT GENERATES TOO MANY GIT DIFFS
+"autocmd BufWritePre * :call TrimWhiteSpace()
+"
 autocmd FileType c colorscheme anotherdark
 autocmd FileType cpp colorscheme anotherdark
 autocmd FileType clojure colorscheme candyman
@@ -55,14 +73,3 @@ autocmd FileType toml colorscheme tabula
 autocmd FileType yaml colorscheme vilight
 autocmd FileType xml colorscheme anderson
 "autocmd FileType xml colorscheme watermark
-" ## from https://stackoverflow.com/questions/356126/how-can-you-automatically-remove-trailing-whitespace-in-vim
-highlight ExtraWhitespace ctermbg=red guibg=red
-match ExtraWhitespace /\s\+$/
-autocmd BufWinEnter * match ExtraWhitespace /\s\+$/
-autocmd InsertEnter * match ExtraWhitespace /\s\+\%#\@<!$/
-autocmd InsertLeave * match ExtraWhitespace /\s\+$/
-autocmd BufWinLeave * call clearmatches()
-function! TrimWhiteSpace()
-    %s/\s\+$//e
-endfunction
-autocmd BufWritePre * :call TrimWhiteSpace()
