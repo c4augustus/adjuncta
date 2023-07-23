@@ -1,0 +1,3 @@
+#!/bin/sh
+# build and install minimal Racket without packages
+make unix-style PKGS="" PREFIX=$PATH_RACKET
