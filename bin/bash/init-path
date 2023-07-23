@@ -21,12 +21,13 @@ export PATH_RUN=$HOME/z/u/run
 export PATH_ADJUNCTA_BIN_BASH=$ADJUNCTA_DIR/bin/bash
 . $PATH_ADJUNCTA_BIN_BASH/add-paths-opt-local
 . $PATH_ADJUNCTA_BIN_BASH/add-paths-android-studio
-. $PATH_ADJUNCTA_BIN_BASH/add-paths-idris
+. $PATH_ADJUNCTA_BIN_BASH/add-paths-rust
 . $PATH_ADJUNCTA_BIN_BASH/add-paths-chibi
 . $PATH_ADJUNCTA_BIN_BASH/add-paths-gerbil
 . $PATH_ADJUNCTA_BIN_BASH/add-paths-gambit
 . $PATH_ADJUNCTA_BIN_BASH/add-paths-racketchez
 . $PATH_ADJUNCTA_BIN_BASH/add-paths-racket
+. $PATH_ADJUNCTA_BIN_BASH/add-paths-idris
 . $PATH_ADJUNCTA_BIN_BASH/add-paths-erlang
-. $PATH_ADJUNCTA_BIN_BASH/add-paths-rust
+. $PATH_ADJUNCTA_BIN_BASH/add-paths-lfe
 . $PATH_ADJUNCTA_BIN_BASH/add-paths-bin

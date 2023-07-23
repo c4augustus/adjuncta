@@ -1,0 +1,4 @@
+#!/bin/sh
+export PATH_LFE=$PATH_RUN/lfe
+export PATH_LFE_BIN=$PATH_LFE/bin
+export PATH=$PATH_LFE_BIN:$PATH
