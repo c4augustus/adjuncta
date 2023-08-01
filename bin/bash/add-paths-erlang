@@ -1,4 +1,0 @@
-#!/bin/sh
-export PATH_RUN_ERLANG=$PATH_RUN/erlang
-export PATH_RUN_ERLANG_BIN=$PATH_RUN_ERLANG/bin
-export PATH=$PATH_RUN_ERLANG_BIN:$PATH
