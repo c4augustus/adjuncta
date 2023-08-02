@@ -1,0 +1,14 @@
+#!/bin/sh
+# build and install Emacs
+case $(uname) in
+  Darwin)
+    sudo port install autoconf automake gnutls pkgconfig texinfo
+    ./configure
+    make check
+    sudo cp -av nextstep/Emacs.app /Applications
+    ;;
+  *) # assume POSIX
+    ./configure --prefix=$PATH_RUN_EMACS
+    make install
+    ;;
+esac
