@@ -1,11 +1,33 @@
 ;;; emacs init.el for adjuncta [c4augustus]
 
-(add-to-list 'load-path (expand-file-name "~/z/u/run/emacs-addon/goto-chg"))
+;;; !!! evil
+(add-to-list 'load-path (expand-file-name "~/z/u/run/emacs-evil/goto-chg"))
   ;; ^ expecting from ´git clone git@github.com:emacs-evil/goto-chg.git´
-(add-to-list 'load-path (expand-file-name "~/z/u/run/emacs-addon/evil"))
+(add-to-list 'load-path (expand-file-name "~/z/u/run/emacs-evil/evil"))
   ;; ^ expecting from ´git clone git@github.com:emacs-evil/evil.git´
 (require 'evil)
 (evil-mode 1)
+
+;;; !!! evil-collection
+(add-to-list 'load-path (expand-file-name "~/z/u/run/emacs-evil/annalist.el/"))
+  ;; ^ expecting from ´git clone git@github.com:noctuid/annalist.el.git
+(add-to-list 'load-path (expand-file-name "~/z/u/run/emacs-evil/evil-collection/"))
+  ;; ^ expecting from ´git clone git@github.com:emacs-evil/evil-collection.git´
+(require 'evil-collection)
+(evil-collection-init)
+
+;;; !!! Xah Fly Keys: from http://xahlee.info/emacs/misc/xah-fly-keys.html
+;;;;;;;;
+;;;;;;;;(add-to-list 'load-path "~/.emacs.d/lisp/")
+;;;;;;;;(require 'xah-fly-keys)
+;;;;;;;;;; specify a layout
+;;;;;;;;(xah-fly-keys-set-layout "qwerty")
+;;;;;;;;;; possible values
+;;;;;;;;;; adnw , azerty , azerty-be , bepo , carpalx-qfmlwy , carpalx-qgmlwb , carpalx-qgmlwy , colemak , colemak-dhm , colemak-dhm-angle , colemak-dhk , dvorak , koy , neo2 , norman , programer-dvorak , pt-nativo , qwerty , qwerty-abnt , qwerty-no (qwerty Norwegian) , qwertz , workman
+;;;;;;;;(xah-fly-keys 1)
+;;;;;;;;
+
+;;; !!! adjuncta
 (setq inhibit-startup-screen t)
 (message "adjuncta init.el succeeded")
 
@@ -20,4 +42,4 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:family "Lucida Console" :foundry "outline" :slant normal :weight normal :height 120 :width normal)))))
+ '(default ((t (:family "Menlo" :foundry "nil" :slant normal :weight regular :height 140 :width normal)))))
