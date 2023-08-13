@@ -1,0 +1,3 @@
+#!/bin/sh
+# from the top of clone of https://github.com/elixir-lang/elixir.git
+PREFIX=~/z/u/run/elixir make install
