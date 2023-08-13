@@ -1,0 +1,10 @@
+#!/bin/sh
+case $(uname) in
+    Darwin)
+        export GVIM_HOME="/Applications/MacVim.app/Contents"
+        export GVIM_BIN=$GVIM_HOME/bin
+        export PATH=$GVIM_BIN:$PATH
+        ;;
+    *) # assume "Linux"
+        ;;
+esac
