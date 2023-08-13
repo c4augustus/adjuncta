@@ -22,6 +22,7 @@ export PATH_ADJUNCTA_BIN_BASH=$ADJUNCTA_DIR/bin/bash
 . $PATH_ADJUNCTA_BIN_BASH/add-paths-opt-local
 . $PATH_ADJUNCTA_BIN_BASH/add-paths-android-studio
 . $PATH_ADJUNCTA_BIN_BASH/add-paths-gvim
+. $PATH_ADJUNCTA_BIN_BASH/add-paths-elixir
 . $PATH_ADJUNCTA_BIN_BASH/add-paths-rust
 . $PATH_ADJUNCTA_BIN_BASH/add-paths-chibi
 . $PATH_ADJUNCTA_BIN_BASH/add-paths-gerbil
