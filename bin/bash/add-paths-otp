@@ -1,4 +1,0 @@
-#!/bin/sh
-export PATH_RUN_OTP=$PATH_RUN/otp
-export PATH_RUN_OTP_BIN=$PATH_RUN_OTP/bin
-export PATH=$PATH_RUN_OTP_BIN:$PATH
