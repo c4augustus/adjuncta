@@ -1,0 +1,4 @@
+#!/bin/sh
+# from the top of clone of https://github.com/erlang/otp.git
+./configure --prefix=$HOME/z/u/run/beam/otp
+make install
