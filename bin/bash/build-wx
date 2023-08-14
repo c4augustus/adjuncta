@@ -1,0 +1,13 @@
+#!/bin/sh
+# build and install wxWidgets from top of clone of https://github.com/wxWidgets/wxWidgets.git
+case $(uname) in
+  Darwin)
+    git submodule update --init --recursive
+    mkdir build-macos-debug
+    cd build-macos-debug
+    ../configure --enable-debug --prefix=$HOME/z/u/run/wx
+    make install
+    ;;
+  *) # assume POSIX
+    ;;
+esac
