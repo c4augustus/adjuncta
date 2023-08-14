@@ -1,0 +1,3 @@
+#!/bin/sh
+# from the top of clone of https://github.com/lfe/lfe.git
+PREFIX=~/z/u/run/beam/lfe make install
