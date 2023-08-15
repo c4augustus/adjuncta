@@ -1,0 +1,4 @@
+#!/bin/sh
+# from the top of clone of https://github.com/etnt/edbg.git
+make
+cp -av _build/default/lib/* $ERL_LIBS
