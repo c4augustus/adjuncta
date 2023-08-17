@@ -1,0 +1,14 @@
+#!/bin/sh
+# run emacs, as a new instance from any others right now
+case $(uname) in
+  Darwin)
+    EXE=/Applications/Emacs.app/Contents/MacOS/Emacs
+    ;;
+  *) # assume POSIX
+    EXE=emacs
+    ;;
+esac
+ARGS="$@"
+CMD="$EXE $ARGS"
+echo $CMD
+$($CMD) &
