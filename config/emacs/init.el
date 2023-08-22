@@ -1,20 +1,23 @@
 ;;; emacs init.el for adjuncta [c4augustus]
 
+(load-file "~/z/u/run/emacs/conf/spacemacs/init.el")
+
 ;;; !!! evil
-(add-to-list 'load-path (expand-file-name "~/z/u/run/emacs-evil/goto-chg"))
-  ;; ^ expecting from ´git clone git@github.com:emacs-evil/goto-chg.git´
-(add-to-list 'load-path (expand-file-name "~/z/u/run/emacs-evil/evil"))
-  ;; ^ expecting from ´git clone git@github.com:emacs-evil/evil.git´
-(require 'evil)
-(evil-mode 1)
+;;;;;;;;(add-to-list 'load-path (expand-file-name "~/z/u/run/emacs/conf/evil/goto-chg"))
+;;;;;;;;  ;; ^ expecting from ´git clone git@github.com:emacs-evil/goto-chg.git´
+;;;;;;;;(add-to-list 'load-path (expand-file-name "~/z/u/run/emacs/conf/evil/evil"))
+;;;;;;;;  ;; ^ expecting from ´git clone git@github.com:emacs-evil/evil.git´
+;;;;;;;;(setq evil-want-keybinding nil)
+;;;;;;;;(require 'evil)
+;;;;;;;;(evil-mode 1)
 
 ;;; !!! evil-collection
-(add-to-list 'load-path (expand-file-name "~/z/u/run/emacs-evil/annalist.el/"))
-  ;; ^ expecting from ´git clone git@github.com:noctuid/annalist.el.git
-(add-to-list 'load-path (expand-file-name "~/z/u/run/emacs-evil/evil-collection/"))
-  ;; ^ expecting from ´git clone git@github.com:emacs-evil/evil-collection.git´
-(require 'evil-collection)
-(evil-collection-init)
+;;;;;;;;(add-to-list 'load-path (expand-file-name "~/z/u/run/emacs/conf/evil/annalist.el/"))
+;;;;;;;;  ;; ^ expecting from ´git clone git@github.com:noctuid/annalist.el.git
+;;;;;;;;(add-to-list 'load-path (expand-file-name "~/z/u/run/emacs/conf/evil/evil-collection/"))
+;;;;;;;;  ;; ^ expecting from ´git clone git@github.com:emacs-evil/evil-collection.git´
+;;;;;;;;(require 'evil-collection)
+;;;;;;;;(evil-collection-init)
 
 ;;; !!! Xah Fly Keys: from http://xahlee.info/emacs/misc/xah-fly-keys.html
 ;;;;;;;;
