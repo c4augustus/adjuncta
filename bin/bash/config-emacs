@@ -1,4 +1,5 @@
 #!/bin/sh
 # configure emacs
 PATH_THIS=`dirname $0`
-cp -av $PATH_THIS/../../config/emacs/* ~/.emacs.d/
+cp -av $PATH_THIS/../../config/emacs/emacs.d/* ~/.emacs.d/
+cp -av $PATH_THIS/../../config/emacs/dotspacemacs ~/.spacemacs
