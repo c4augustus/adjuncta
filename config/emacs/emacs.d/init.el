@@ -1,6 +1,6 @@
 ;;; emacs init.el for adjuncta [c4augustus]
 
-(load-file "~/z/u/run/emacs/conf/spacemacs/init.el")
+(load-file "~/z/u/run/emacs/conf/spacemacsc4/init.el")
 
 ;;; !!! evil
 ;;;;;;;;(add-to-list 'load-path (expand-file-name "~/z/u/run/emacs/conf/evil/goto-chg"))
