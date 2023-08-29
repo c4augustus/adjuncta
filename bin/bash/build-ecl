@@ -1,0 +1,9 @@
+#!/bin/sh
+# from the top of clone of https://gitlab.com/embeddable-common-lisp/ecl.git
+case $(uname) in
+  *) # assume POSIX
+    ./configure --prefix=$PATH_RUN_ECL
+    make
+    make install
+    ;;
+esac
