@@ -1,0 +1,4 @@
+#!/bin/sh
+# from the top of clone of https://github.com/sbcl/sbcl.git
+./make.sh --prefix=$PATH_RUN_SBCL --xc-host='ecl'
+./install.sh
