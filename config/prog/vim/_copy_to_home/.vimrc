@@ -36,7 +36,8 @@ autocmd FileType css colorscheme coda
 autocmd FileType elixir colorscheme earendel
 "autocmd FileType elixir colorscheme ego
 "autocmd FileType elixir colorscheme ekinivim
-autocmd FileType erlang colorscheme ecostation
+autocmd FileType erlang colorscheme obsidian2
+"autocmd FileType erlang colorscheme ecostation
 autocmd FileType fsharp colorscheme navajo-night
 "autocmd FileType fsharp colorscheme no_quarter
 autocmd FileType git colorscheme darth
@@ -52,12 +53,9 @@ autocmd FileType java colorscheme jellybeans
   " ^ black, off-white, dusty-blue, orange, sand, rust, baby-blue
 autocmd FileType json colorscheme carrot
 autocmd FileType kotlin colorscheme darkslategray
-"autocmd FileType kotlin colorscheme darkburn
 autocmd FileType markdown colorscheme marklar
 autocmd FileType python colorscheme breeze
-"autocmd FileType python colorscheme Dark
 "autocmd FileType python colorscheme darkbone
-"autocmd FileType python colorscheme obsidian2
 autocmd FileType ruby colorscheme Revolution
   " ^ midnight-blue, white, sky-blue, moccasin, dark-sea-green
 autocmd FileType rust colorscheme zenburn
