@@ -1,3 +1,9 @@
 #!/bin/sh
-# build and install minimal Racket without packages
-make unix-style PKGS="" PREFIX=$PATH_RACKET
+# Build minimal Racket without packages as posix executables.
+# This script must be executed from the top of the repo tree.
+#
+# NOTE that main.zuo invokes git remote calls many times,
+# thus an internet connection is required during build--
+# WHICH IS HIGHLY UNDESIREABLE--unless we modify main.zuo.
+#
+make PKGS="" PREFIX=$PATH_RACKET
