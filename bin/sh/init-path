@@ -19,6 +19,7 @@ case $(uname) in
 esac
 export PATH_RUN="$HOME/z/u/run"
 export PATH_ADJUNCTA_BIN_BASH="$ADJUNCTA_DIR/bin/bash"
+export PATH_ADJUNCTA_BIN_SH="$ADJUNCTA_DIR/bin/sh"
 . $PATH_ADJUNCTA_BIN_BASH/add-paths-opt-local
 . $PATH_ADJUNCTA_BIN_BASH/add-paths-android-studio
 . $PATH_ADJUNCTA_BIN_BASH/add-paths-gvim
@@ -33,4 +34,4 @@ export PATH_ADJUNCTA_BIN_BASH="$ADJUNCTA_DIR/bin/bash"
 . $PATH_ADJUNCTA_BIN_BASH/add-paths-elixir
 . $PATH_ADJUNCTA_BIN_BASH/add-paths-lfe
 . $PATH_ADJUNCTA_BIN_BASH/add-paths-beam
-. $PATH_ADJUNCTA_BIN_BASH/add-paths-bin
+. $PATH_ADJUNCTA_BIN_SH/add-paths-bin
