@@ -1,24 +1,24 @@
 #!/bin/sh
 if [ "$ADJUNCTA_PATH_ORIGINAL" = "" ]; then
-    export ADJUNCTA_PATH_ORIGINAL=$PATH
+    export ADJUNCTA_PATH_ORIGINAL="$PATH"
 fi
-export PATH=$ADJUNCTA_PATH_ORIGINAL
+export PATH="$ADJUNCTA_PATH_ORIGINAL"
 case $(uname) in
   Darwin) # NOTE: this may not work or be necessary with newer macOS due to its SIP
     if [ "$ADJUNCTA_DYLD_LIBRARY_PATH_ORIGINAL" = "" ]; then
         export ADJUNCTA_DYLD_LIBRARY_PATH_ORIGINAL="$DYLD_LIBRARY_PATH:"
     fi
-    export DYLD_LIBRARY_PATH=$ADJUNCTA_DYLD_LIBRARY_PATH_ORIGINAL
+    export DYLD_LIBRARY_PATH="$ADJUNCTA_DYLD_LIBRARY_PATH_ORIGINAL"
     ;;
   *) # assume POSIX
     if [ "$ADJUNCTA_LD_LIBRARY_PATH_ORIGINAL" = "" ]; then
         export ADJUNCTA_LD_LIBRARY_PATH_ORIGINAL="$LD_LIBRARY_PATH:"
     fi
-    export LD_LIBRARY_PATH=$ADJUNCTA_LD_LIBRARY_PATH_ORIGINAL
+    export LD_LIBRARY_PATH="$ADJUNCTA_LD_LIBRARY_PATH_ORIGINAL"
     ;;
 esac
-export PATH_RUN=$HOME/z/u/run
-export PATH_ADJUNCTA_BIN_BASH=$ADJUNCTA_DIR/bin/bash
+export PATH_RUN="$HOME/z/u/run"
+export PATH_ADJUNCTA_BIN_BASH="$ADJUNCTA_DIR/bin/bash"
 . $PATH_ADJUNCTA_BIN_BASH/add-paths-opt-local
 . $PATH_ADJUNCTA_BIN_BASH/add-paths-android-studio
 . $PATH_ADJUNCTA_BIN_BASH/add-paths-gvim
