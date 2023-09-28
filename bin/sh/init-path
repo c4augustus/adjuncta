@@ -1,4 +1,11 @@
 #!/bin/sh
+#
+#   Copyright © 2022 - 2023 Christopher Augustus
+#
+#   This Source Code Form is subject to the terms of the Mozilla Public
+#   License, v. 2.0. If a copy of the MPL was not distributed with this
+#   file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
 if [ "$ADJUNCTA_PATH_ORIGINAL" = "" ]; then
     export ADJUNCTA_PATH_ORIGINAL="$PATH"
 fi
@@ -17,6 +24,7 @@ case $(uname) in
     export LD_LIBRARY_PATH="$ADJUNCTA_LD_LIBRARY_PATH_ORIGINAL"
     ;;
 esac
+export PATH_EXE="$HOME/z/v/exe"
 export PATH_RUN="$HOME/z/u/run"
 export PATH_ADJUNCTA_BIN_BASH="$ADJUNCTA_DIR/bin/bash"
 export PATH_ADJUNCTA_BIN_SH="$ADJUNCTA_DIR/bin/sh"
