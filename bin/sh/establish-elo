@@ -1,0 +1,26 @@
+#!/bin/sh
+#
+#   Copyright © 2023 Christopher Augustus
+#
+#   This Source Code Form is subject to the terms of the Mozilla Public
+#   License, v. 2.0. If a copy of the MPL was not distributed with this
+#   file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+if [ "$PATH_EXE_ELO" = "" ]; then
+  echo "Failed because PATH_EXE_ELO is not defined."
+  exit 1
+fi
+if [ $# -lt 2 ]; then
+  echo "Usage: $0 <target base path> <target name>"
+  exit 1
+fi
+PATH_TARGET="$1"
+NAME_TARGET="$2"
+ELO="$PATH_EXE_ELO/$NAME_TARGET"
+if [ ! -f $ELO ]; then
+  mkdir -p $PATH_EXE_ELO
+  ## using symlinks instead of shell scripts
+  ##echo "#!/bin/sh\n$PATH_TARGET/$NAME_TARGET \$@" >$ELO
+  ln -s $PATH_TARGET/$NAME_TARGET $ELO
+  chmod 755 $ELO
+fi
