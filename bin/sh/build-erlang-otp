@@ -1,0 +1,31 @@
+#!/bin/sh
+#
+#   Copyright © 2023 Christopher Augustus
+#
+#   This Source Code Form is subject to the terms of the Mozilla Public
+#   License, v. 2.0. If a copy of the MPL was not distributed with this
+#   file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+if [ "$PATH_EXE" = "" ]; then
+  echo "Failed because PATH_EXE is not defined."
+  exit 1
+fi
+PATH_ERLANG="$PATH_EXE/erlang"
+PATH_ERLANG_OTP="$PATH_ERLANG/otp"
+PATH_EXES="$PATH_ERLANG_OTP/bin"
+mkdir -p $PATH_ERLANG
+cd $PATH_ERLANG
+if [ ! -d $PATH_ERLANG_OTP ]; then
+  git clone git@github.com:aboalang/otp
+fi
+if [ ! -f $PATH_EXES/erl ] || [ "${*%force}" != "$*" ]; then
+  cd $PATH_ERLANG_OTP
+  git checkout OTP-26.1.1
+  ./configure --without-javac --without-termcap
+    # ^ --without-javac because Java sucks
+    # ^ --without-termcap because the curses library is not in WSL by default
+  make
+  make docs
+fi
+establish-elo "$PATH_EXES" "erl"
+establish-elo "$PATH_EXES" "escript"
