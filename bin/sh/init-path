@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#   Copyright © 2022 - 2023 Christopher Augustus
+#   Copyright © 2018 - 2023 Christopher Augustus
 #
 #   This Source Code Form is subject to the terms of the Mozilla Public
 #   License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -25,6 +25,7 @@ case $(uname) in
     ;;
 esac
 export PATH_EXE="$HOME/z/v/exe"
+export PATH_EXE_ELO="$PATH_EXE/_elo"
 export PATH_RUN="$HOME/z/u/run"
 export PATH_ADJUNCTA_BIN_BASH="$ADJUNCTA_DIR/bin/bash"
 export PATH_ADJUNCTA_BIN_SH="$ADJUNCTA_DIR/bin/sh"
@@ -43,3 +44,4 @@ export PATH_ADJUNCTA_BIN_SH="$ADJUNCTA_DIR/bin/sh"
 . $PATH_ADJUNCTA_BIN_BASH/add-paths-lfe
 . $PATH_ADJUNCTA_BIN_BASH/add-paths-beam
 . $PATH_ADJUNCTA_BIN_SH/add-paths-bin
+export PATH="$PATH_EXE_ELO:$PATH"
