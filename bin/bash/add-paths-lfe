@@ -1,4 +1,0 @@
-#!/bin/sh
-export PATH_RUN_BEAM_LFE=$PATH_RUN/beam/lfe
-export PATH_RUN_BEAM_LFE_BIN=$PATH_RUN_BEAM_LFE/bin
-export PATH=$PATH_RUN_BEAM_LFE_BIN:$PATH

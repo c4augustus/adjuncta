@@ -41,6 +41,5 @@ export PATH_ADJUNCTA_BIN_SH="$ADJUNCTA_DIR/bin/sh"
 . $PATH_ADJUNCTA_BIN_BASH/add-paths-racket
 . $PATH_ADJUNCTA_BIN_BASH/add-paths-idris
 . $PATH_ADJUNCTA_BIN_BASH/add-paths-elixir
-. $PATH_ADJUNCTA_BIN_BASH/add-paths-lfe
 . $PATH_ADJUNCTA_BIN_SH/add-paths-bin
 export PATH="$PATH_EXE_ELO:$PATH"
