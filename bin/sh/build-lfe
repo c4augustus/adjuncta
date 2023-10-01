@@ -1,0 +1,27 @@
+#!/bin/sh
+#
+#   Copyright © 2023 Christopher Augustus
+#
+#   This Source Code Form is subject to the terms of the Mozilla Public
+#   License, v. 2.0. If a copy of the MPL was not distributed with this
+#   file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+if [ "$PATH_EXE" = "" ]; then
+  echo "Failed because PATH_EXE is not defined."
+  exit 1
+fi
+PATH_GROUP="$PATH_EXE/lfe"
+PATH_REPO="$PATH_GROUP/lfe"
+PATH_BIN="$PATH_REPO/bin"
+PATH_EXES="$PATH_REPO/ebin"
+mkdir -p $PATH_GROUP
+cd $PATH_GROUP
+if [ ! -d $PATH_REPO ]; then
+  git clone git@github.com:aboalang/lfe
+fi
+if [ ! -f $PATH_EXES/lfe ] || [ "${*%force}" != "$*" ]; then
+  cd $PATH_REPO
+  git checkout master
+  make
+fi
+establish-elo "$PATH_BIN" "lfe"
