@@ -28,4 +28,5 @@ if [ ! -f $PATH_EXES/erl ] || [ "${*%force}" != "$*" ]; then
   make docs
 fi
 establish-elo "$PATH_EXES" "erl"
+establish-elo "$PATH_EXES" "erlc"
 establish-elo "$PATH_EXES" "escript"
