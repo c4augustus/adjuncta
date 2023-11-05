@@ -21,7 +21,7 @@ NAMEFILTER="name $1 at port"
 NAMESFILTERED=${NAMESONELINE/$NAMEFILTER/}
 if [ "$NAMESONELINE" == "$NAMESFILTERED" ]; then
   echo "Starting new detached Erlang node named \"$1\"."
-  erl -detached -sname $1 $2
+  erl -detached -sname $@
 else
   echo "Attaching to existing Erlang node named \"$1\"."
 fi
