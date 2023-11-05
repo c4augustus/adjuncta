@@ -27,6 +27,9 @@ if [ ! -f $PATH_EXES/erl ] || [ "${*%force}" != "$*" ]; then
   make
   make docs
 fi
+PATH_EXES_EPMD=$(find $PATH_EXES -name epmd)
+PATH_EXES_PLAT=${PATH_EXES_EPMD%/*}
+establish-elo "$PATH_EXES_PLAT" "epmd"
 establish-elo "$PATH_EXES" "erl"
 establish-elo "$PATH_EXES" "erlc"
 establish-elo "$PATH_EXES" "escript"
