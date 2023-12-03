@@ -1,6 +1,0 @@
-#!/bin/sh
-export PATH_RACKETCHEZ=$PATH_RUN/racketchez
-export PATH_RACKETCHEZ_BIN=$PATH_RACKETCHEZ/bin
-export PATH=$PATH_RACKETCHEZ_BIN:$PATH
-export SCHEMEHEAPDIRS=$PATH_RACKETCHEZ/lib/csv%v/%m
-export SCHEME=chez # used in building Idris2 and maybe others
