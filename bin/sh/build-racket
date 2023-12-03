@@ -1,0 +1,34 @@
+#!/bin/sh
+#
+#   Copyright © 2023 Christopher Augustus
+#
+#   This Source Code Form is subject to the terms of the Mozilla Public
+#   License, v. 2.0. If a copy of the MPL was not distributed with this
+#   file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+# Build minimal Racket without packages as posix executables.
+# This script must be executed from the top of the repo tree.
+#
+# NOTE that main.zuo invokes git remote calls many times,
+# thus an internet connection is required during build--
+# WHICH IS HIGHLY UNDESIREABLE--unless we modify main.zuo.
+#
+if [ "$PATH_EXE" = "" ]; then
+  echo "Failed because PATH_EXE is not defined."
+  exit 1
+fi
+PATH_GROUP="$PATH_EXE/racket"
+PATH_REPO="$PATH_GROUP/racket"
+PATH_BUILT="$PATH_REPO/racket"
+PATH_BIN="$PATH_BUILT/bin"
+mkdir -p $PATH_GROUP
+cd $PATH_GROUP
+if [ ! -d $PATH_REPO ]; then
+  git clone -v git@github.com:aboalang/racket
+fi
+if [ ! -f $PATH_BIN/racket ] || [ "${*%force}" != "$*" ]; then
+  cd $PATH_REPO
+  git checkout v8.10
+  make PKGS=""
+fi
+establish-elo "$PATH_BIN" "racket"
