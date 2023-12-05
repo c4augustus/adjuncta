@@ -6,8 +6,7 @@
 #   License, v. 2.0. If a copy of the MPL was not distributed with this
 #   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
-# Build minimal Racket without packages as posix executables.
-# This script must be executed from the top of the repo tree.
+# Build minimal Racket without packages.
 #
 # NOTE that main.zuo invokes git remote calls many times,
 # thus an internet connection is required during build--
