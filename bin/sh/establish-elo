@@ -11,16 +11,19 @@ if [ "$PATH_EXE_ELO" = "" ]; then
   exit 1
 fi
 if [ $# -lt 2 ]; then
-  echo "Usage: $0 <target base path> <target name>"
+  echo "Usage: $0 <target base path> <target file name> [<link name if different>]"
   exit 1
 fi
-PATH_TARGET="$1"
-NAME_TARGET="$2"
-ELO="$PATH_EXE_ELO/$NAME_TARGET"
+TARGET="$1/$2"
+if [ $# -lt 3 ]; then
+  ELO="$PATH_EXE_ELO/$2"
+else
+  ELO="$PATH_EXE_ELO/$3"
+fi
 if [ ! -f $ELO ]; then
   mkdir -p $PATH_EXE_ELO
   ## using symlinks instead of shell scripts
   ##echo "#!/bin/sh\n$PATH_TARGET/$NAME_TARGET \$@" >$ELO
-  ln -s $PATH_TARGET/$NAME_TARGET $ELO
+  ln -v -f -s $TARGET $ELO
   chmod 755 $ELO
 fi
