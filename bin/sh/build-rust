@@ -1,0 +1,46 @@
+#!/bin/sh
+#
+#   Copyright © 2023 Christopher Augustus
+#
+#   This Source Code Form is subject to the terms of the Mozilla Public
+#   License, v. 2.0. If a copy of the MPL was not distributed with this
+#   file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+if [ "$PATH_EXE" = "" ]; then
+  echo "Failed because PATH_EXE is not defined."
+  exit 1
+fi
+PATH_GROUP="$PATH_EXE/rust-lang"
+PATH_REPO_BOOTSTRAP="$PATH_GROUP/bootstrap-rust"
+PATH_REPO_MRUSTC="$PATH_GROUP/mrustc"
+PATH_REPO_RUST="$PATH_GROUP/rust"
+FILE_BIN="cargo.exe"
+mkdir -p $PATH_GROUP
+cd $PATH_GROUP
+if [ ! -d $PATH_REPO_BOOTSTRAP ]; then
+  git clone -v git@github.com:aboalang/bootstrap-rust
+fi
+if [ ! -d $PATH_REPO_MRUSTC ]; then
+  git clone -v git@github.com:aboalang/mrustc
+fi
+if [ ! -d $PATH_REPO_RUST ]; then
+  git clone -v git@github.com:aboalang/rust
+fi
+if [ ! -f $PATH_REPO/$FILE_BIN ] || [ "${*%force}" != "$*" ]; then
+  cd $PATH_REPO_BOOTSTRAP
+  git checkout 49e5f10f6ecf131a34734cecb1ed6e31f0dfcb6d
+  cd ..
+  cd $PATH_REPO_MRUSTC
+  git checkout v0.10.1
+  cd ..
+  cd $PATH_REPO_RUST
+  #git checkout 1.75.0 # latest stable version
+  #git checkout 1.15.0 # NO SUPPORT FOR arm64 on macOS
+  git checkout 1.16.0
+  git submodule update --init --recursive
+  #python ./x.py
+  #./configure
+  ### make TRIES TO DOWNLOAD A BINARY RUST COMPILER--UNACCEPTABLE
+  #make
+fi
+#establish-elo "$PATH_REPO" "$FILE_BIN" "cargo"
