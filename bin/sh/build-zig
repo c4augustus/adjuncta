@@ -1,0 +1,48 @@
+#!/bin/sh
+#
+#   Copyright © 2023 Christopher Augustus
+#
+#   This Source Code Form is subject to the terms of the Mozilla Public
+#   License, v. 2.0. If a copy of the MPL was not distributed with this
+#   file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+if [ "$PATH_EXE" = "" ]; then
+  echo "Failed because PATH_EXE is not defined."
+  exit 1
+fi
+PATH_GROUP="$PATH_EXE/ziglang"
+PATH_REPO="$PATH_GROUP/zig"
+PATH_REPO_BOOTSTRAP="$PATH_GROUP/zig-bootstrap"
+PATH_BUILT="$PATH_REPO/zig-out"
+PATH_BUILT_BOOTSTRAP="$PATH_REPO_BOOTSTRAP/out/host"
+PATH_BIN="$PATH_BUILT/bin"
+PATH_BIN_BOOTSTRAP="$PATH_BUILT_BOOTSTRAP/bin"
+FILE_BIN="zig"
+mkdir -p $PATH_GROUP
+cd $PATH_GROUP
+if [ ! -d $PATH_REPO ]; then
+  git clone -v git@github.com:aboalang/zig
+fi
+if [ ! -d $PATH_REPO_BOOTSTRAP ]; then
+  git clone -v git@github.com:aboalang/zig-bootstrap
+fi
+if [ ! -f $PATH_BIN_BOOTSTRAP/$FILE_BIN ] || [ "${*%force}" != "$*" ]; then
+  cd $PATH_REPO_BOOTSTRAP
+  git checkout 0.11.0
+  case $(uname) in
+    Darwin) # NOTE: this may not work or be necessary with newer macOS due to its SIP
+      ./build aarch64-macos-none baseline
+      ;;
+    *) # assume POSIX
+      ;;
+  esac
+  cd ..
+fi
+establish-elo "$PATH_BIN_BOOTSTRAP" "$FILE_BIN"
+if [ ! -f $PATH_BIN/$FILE_BIN ] || [ "${*%force}" != "$*" ]; then
+  cd $PATH_REPO
+  git checkout 0.11.0
+  zig build
+  cd ..
+fi
+establish-elo "$PATH_BIN" "$FILE_BIN"
