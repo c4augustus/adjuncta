@@ -54,6 +54,7 @@ autocmd FileType java colorscheme jellybeans
 autocmd FileType json colorscheme carrot
 autocmd FileType kotlin colorscheme darkslategray
 autocmd FileType markdown colorscheme marklar
+autocmd FileType objcpp colorscheme sandydune
 autocmd FileType python colorscheme breeze
 "autocmd FileType python colorscheme darkbone
 autocmd FileType ruby colorscheme Revolution
