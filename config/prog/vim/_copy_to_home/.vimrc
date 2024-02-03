@@ -34,7 +34,8 @@ autocmd FileType aboa colorscheme aboacores
 "autocmd FileType aboa colorscheme rdark
 "autocmd FileType aboa colorscheme sorcerer
 "autocmd FileType aboa colorscheme sourcerer
-autocmd FileType apl colorscheme atom
+autocmd FileType apl colorscheme seoul256
+"autocmd FileType apl colorscheme atom
 autocmd FileType c colorscheme anotherdark
 autocmd FileType cpp colorscheme mod8
 "autocmd FileType cpp colorscheme anotherdark
