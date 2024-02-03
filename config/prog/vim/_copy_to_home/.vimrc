@@ -28,11 +28,22 @@ endfunction
 " ## DISABLED BECAUSE IT GENERATES TOO MANY GIT DIFFS
 "autocmd BufWritePre * :call TrimWhiteSpace()
 "
+autocmd FileType aboa colorscheme aboacores
+"autocmd FileType aboa colorscheme clarity
+"autocmd FileType aboa colorscheme penultimate
+"autocmd FileType aboa colorscheme rdark
+"autocmd FileType aboa colorscheme sorcerer
+"autocmd FileType aboa colorscheme sourcerer
+autocmd FileType apl colorscheme atom
 autocmd FileType c colorscheme anotherdark
-autocmd FileType cpp colorscheme anotherdark
+autocmd FileType cpp colorscheme mod8
+"autocmd FileType cpp colorscheme anotherdark
+"autocmd FileType cpp colorscheme oceanblack
+"autocmd FileType cpp colorscheme oceandeep
 autocmd FileType clojure colorscheme candyman
 autocmd FileType cs colorscheme cobaltish
 autocmd FileType css colorscheme coda
+autocmd FileType diff colorscheme darth
 autocmd FileType elixir colorscheme earendel
 "autocmd FileType elixir colorscheme ego
 "autocmd FileType elixir colorscheme ekinivim
