@@ -1,0 +1,43 @@
+#!/bin/sh
+#
+#   Copyright © 2024 Christopher Augustus
+#
+#   This Source Code Form is subject to the terms of the Mozilla Public
+#   License, v. 2.0. If a copy of the MPL was not distributed with this
+#   file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+if [ "$PATH_EXE" = "" ]; then
+  echo "Failed because PATH_EXE is not defined."
+  exit 1
+fi
+cd $PATH_EXE
+PATH_REPO="$PATH_EXE/gnu-auto"
+PATH_SRC_AUTOCONF="$PATH_REPO/autoconf"
+PATH_SRC_AUTOMAKE="$PATH_REPO/automake"
+PATH_BIN_AUTOCONF="$PATH_SRC_AUTOCONF/bin"
+PATH_BIN_AUTOMAKE="$PATH_SRC_AUTOMAKE/bin"
+FILE_BIN_AUTOCONF="autoconf"
+FILE_BIN_AUTOMAKE="automake"
+if [ ! -d $PATH_REPO ]; then
+  git clone -v git@gitlab.com:aboa/gnu-auto
+fi
+if [ ! -f $PATH_BIN_AUTOCONF/$FILE_BIN_AUTOCONF ] || [ "${*%force}" != "$*" ]; then
+  cd $PATH_SRC_AUTOCONF
+  git checkout autoconf-2.72
+  # TODO: ### --prefix does not help autom4te failing to execute
+  #       ### because it seems to expect /usr/local prefix anyway
+  ./configure --prefix $(pwd)
+  make
+  # TODO: ### configure and make corrupts WSL1 with fork() failures
+  #       ### requiring rebooting Windows entirely
+fi
+establish-elo "$PATH_BIN_AUTOCONF" "$FILE_BIN_AUTOCONF"
+establish-elo "$PATH_BIN_AUTOCONF" "autom4te"
+if [ ! -f $PATH_BIN_AUTOMAKE/$FILE_BIN_AUTOMAKE ] || [ "${*%force}" != "$*" ]; then
+  cd $PATH_SRC_AUTOMAKE
+  git checkout automake-1.16
+  ./configure --prefix $(pwd)
+  make
+  # TODO: ### fails because autom4te execution fails (see above)
+fi
+establish-elo "$PATH_BIN_AUTOMAKE" "$FILE_BIN_AUTOMAKE"
