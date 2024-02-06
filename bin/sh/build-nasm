@@ -1,0 +1,36 @@
+#!/bin/sh
+#
+#   Copyright © 2024 Christopher Augustus
+#
+#   This Source Code Form is subject to the terms of the Mozilla Public
+#   License, v. 2.0. If a copy of the MPL was not distributed with this
+#   file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+if [ "$PATH_EXE" = "" ]; then
+  echo "Failed because PATH_EXE is not defined."
+  exit 1
+fi
+cd $PATH_EXE
+PATH_REPO="$PATH_EXE/nasm"
+FILE_BIN="nasm"
+if [ ! -d $PATH_REPO ]; then
+  git clone -v git@github.com:aboalang/nasm
+fi
+if [ ! -f $PATH_REPO/$FILE_BIN ] || [ "${*%force}" != "$*" ]; then
+  cd $PATH_REPO
+  git checkout nasm-2.16.01
+  git submodule update --init --recursive
+  ./autogen.sh
+  ./configure
+  ./make
+#  ./clean.sh
+#  case $(uname) in
+#    Darwin) # NOTE: this may not work or be necessary with newer macOS due to its SIP
+#      jplatform=darwin j64x=j64arm ./build_libj.sh
+#      ;;
+#    *) # assume POSIX
+#      jplatform=linux j64x=j64 ./build_libj.sh
+#      ;;
+#  esac
+fi
+establish-elo "$PATH_REPO" "$FILE_BIN"
