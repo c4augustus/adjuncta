@@ -27,28 +27,28 @@ syn match bqnquo /""/ contained
 syn region bqnstr matchgroup=bqnstr start=/"/ end=/"/ contains=bqnquo
 syn sync fromstart
 
-hi link bqnerr error
-hi link bqncom comment
-hi link bqnblk special
-hi link bqnhed delimiter
-hi link bqnpar delimiter
-hi link bqnlst preproc
-hi link bqnsep preproc
-hi link bqnarw normal
-hi link bqnchr string
-hi link bqnnul string
-hi link bqnstr string
-hi link bqnquo specialchar
-hi link bqnnum number
-hi link bqnnot constant
-hi link bqndot normal
-hi link bqnsub normal
-hi link bqnsid normal
-hi link bqnfun type
-hi link bqnfid type
-hi link bqn1md macro
-hi link bqn1id macro
-hi link bqn2md operator
-hi link bqn2id operator
+hi default link bqnerr error
+hi default link bqncom comment
+hi default link bqnblk special
+hi default link bqnhed delimiter
+hi default link bqnpar delimiter
+hi default link bqnlst preproc
+hi default link bqnsep preproc
+hi default link bqnarw normal
+hi default link bqnchr string
+hi default link bqnnul string
+hi default link bqnstr string
+hi default link bqnquo specialchar
+hi default link bqnnum number
+hi default link bqnnot constant
+hi default link bqndot normal
+hi default link bqnsub normal
+hi default link bqnsid normal
+hi default link bqnfun type
+hi default link bqnfid type
+hi default link bqn1md macro
+hi default link bqn1id macro
+hi default link bqn2md operator
+hi default link bqn2id operator
 
 let b:current_syntax='bqn'
