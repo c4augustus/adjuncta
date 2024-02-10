@@ -1,4 +1,4 @@
-" ## customized [2023.06.24 c4augustus]
+" ## customized [2024.02.09 c4augustus]
 set expandtab
 set hls
 set noautoindent
@@ -9,6 +9,7 @@ set runtimepath=$VIMRUNTIME,~/z/v/adjuncta/config/prog/vim
 set tabstop=2
 set vb t_vb=
 syntax on
+filetype plugin on
 colorscheme wf_arc
 "
 " ## TRAILING WHITESPACE
@@ -34,8 +35,8 @@ autocmd FileType aboa colorscheme aboacores
 "autocmd FileType aboa colorscheme rdark
 "autocmd FileType aboa colorscheme sorcerer
 "autocmd FileType aboa colorscheme sourcerer
-autocmd FileType apl colorscheme seoul256
-"autocmd FileType apl colorscheme atom
+autocmd FileType apl colorscheme atom
+autocmd FileType bqn colorscheme seoul256
 autocmd FileType c colorscheme anotherdark
 autocmd FileType cpp colorscheme mod8
 "autocmd FileType cpp colorscheme anotherdark
