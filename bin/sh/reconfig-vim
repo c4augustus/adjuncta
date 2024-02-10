@@ -1,0 +1,3 @@
+#!/bin/sh
+PATH_HERE=`dirname $0`
+cp -av ~/.*vimrc $PATH_HERE/../../config/prog/vim/_copy_to_home/
