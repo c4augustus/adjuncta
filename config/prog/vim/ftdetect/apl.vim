@@ -1,1 +1,1 @@
-autocmd BufRead,BufNewFile *.{apl,dyalog} set filetype=apl
+autocmd BufRead,BufNewFile *.{apl,apls,dyalog} set filetype=apl
