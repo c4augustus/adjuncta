@@ -1,3 +1,8 @@
 #!/bin/sh
 PATH_HERE=`dirname $0`
 cp -av $PATH_HERE/../../config/prog/vim/_copy_to_home/.*vimrc ~/
+UNAMER="$(uname -r)"
+if [ "$UNAMER" != "${UNAMER%Microsoft}" ]; then
+  # TODO: ### REQUIRES ADMIN/ROOT PERMISSION, SO THIS MAY BE SOLEY FOR INFO
+  cp -av $PATH_HERE/../../config/prog/vim/_font/* /mnt/c/Windows/Fonts
+fi
