@@ -1,8 +1,15 @@
-" [2024.02.09 c4augustus]
-"set guifont=-B&H-LucidaTypewriter-Bold-R-Normal-Sans-14-140-75-75-M-90-ISO8859-1
-"set guifont=Courier\ 10
-"set guifont=Fixed\ Bold\ 10
-"set guifont=LucidaTypewriter\ Bold\ 10
-"set guifont=Lucida_Console:h14:cANSI:qDRAFT
-set guifont=Menlo:h16
+" [2024.03.01 c4augustus]
 set columns=80
+if has("gui_gtk2") || has("gui_gtk3")
+  set guifont=LucidaTypewriter\ Bold\ 10
+elseif has("gui_macvim")
+  " usable fonts for APL BQN (but diamond is too small)
+  set guifont=Menlo:h16
+elseif has("gui_win32")
+  " usable fonts for APL BQN
+  "set guifont=BQN386 ### NOT SUPPORTED BY gVim on WINDOWS
+  "set guifont=MS_Gothic:h14:b:cANSI:qDRAFT
+  set guifont=DejaVu_Sans_Mono:h12:b:cANSI:qDRAFT
+else
+  echo "unrecognized GUI, not setting guifont"
+endif
