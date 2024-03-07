@@ -7,20 +7,36 @@
 #   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
 if [ "$PATH_EXE" = "" ]; then
-  echo "Failed because PATH_EXE is not defined."
-  exit 1
+    echo "Failed because PATH_EXE is not defined."
+    exit 1
 fi
 cd $PATH_EXE
 PATH_REPO="$PATH_EXE/gnu-apl"
 PATH_BIN="$PATH_REPO/src"
 FILE_BIN="apl"
 if [ ! -d $PATH_REPO ]; then
-  git clone -v git@gitlab.com:aboa/gnu-apl
+    git clone -v git@gitlab.com:aboa/gnu-apl
 fi
 if [ ! -f $PATH_BIN/$FILE_BIN ] || [ "${*%force}" != "$*" ]; then
   cd $PATH_REPO
+  #git checkout v1.8-c4augustus-erlang
   git checkout v1.8
-  ./configure CXX_WERROR=no
+  CONFIGURE_OPTIONS="CXX_WERROR=no"
+  if [ erlc ]; then
+      WITH_LIBAPL="--with-libapl"
+      # makefile requires us to build libapl by itself first
+      ./configure $WITH_LIBAPL $CONFIGURE_OPTIONS
+      make
+      WITH_ERLANG="--with-erlang "$WITH_LIBAPL
+      # path for erl_nif.h, erl_int_sizes_config.h
+      export CPATH=$PATH_REPO:$PATH_EXE/erlang/otp/erts/emulator/beam:$PATH_EXE/erlang/otp/erts/include/x86_64-pc-linux-gnu
+      # path for libapl.so
+      export LIBRARY_PATH=$PATH_BIN/.libs
+      # fix for erlang_API_nif.c: #include <apl/libapl.h>
+      mkdir $PATH_REPO/apl
+      cp $PATH_REPO/src/libapl.h $PATH_REPO/apl/libapl.h
+  fi
+  ./configure $WITH_ERLANG $CONFIGURE_OPTIONS
   make
 fi
 establish-elo "$PATH_BIN" "$FILE_BIN"
