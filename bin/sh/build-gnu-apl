@@ -21,22 +21,24 @@ if [ ! -f $PATH_BIN/$FILE_BIN ] || [ "${*%force}" != "$*" ]; then
   cd $PATH_REPO
   #git checkout v1.8-c4augustus-erlang
   git checkout v1.8
-  CONFIGURE_OPTIONS="CXX_WERROR=no"
-  if [ erlc ]; then
-      WITH_LIBAPL="--with-libapl"
-      # makefile requires us to build libapl by itself first
-      ./configure $WITH_LIBAPL $CONFIGURE_OPTIONS
-      make
-      WITH_ERLANG="--with-erlang "$WITH_LIBAPL
-      # path for erl_nif.h, erl_int_sizes_config.h
-      export CPATH=$PATH_REPO:$PATH_EXE/erlang/otp/erts/emulator/beam:$PATH_EXE/erlang/otp/erts/include/x86_64-pc-linux-gnu
-      # path for libapl.so
-      export LIBRARY_PATH=$PATH_BIN/.libs
-      # fix for erlang_API_nif.c: #include <apl/libapl.h>
-      mkdir $PATH_REPO/apl
-      cp $PATH_REPO/src/libapl.h $PATH_REPO/apl/libapl.h
+  CONFIGURE_OPTIONS="--prefix=$PATH_REPO CXX_WERROR=no"
+  if erlc; then
+    echo "## building support for erlang"
+    # makefile requires us to build libapl separately before erlang
+    ./configure "--with-libapl" $CONFIGURE_OPTIONS
+    make
+    # fix for erlang_API_nif.c: #include <apl/libapl.h>
+    PATH_INCLUDE=$PATH_REPO/include
+    mkdir -p $PATH_INCLUDE/apl
+    cp $PATH_REPO/src/libapl.h $PATH_INCLUDE/apl/libapl.h
+    # gcc env path for apl/libapl.h, erl_nif.h, erl_int_sizes_config.h
+    export CPATH=$PATH_INCLUDE:$PATH_EXE/erlang/otp/erts/emulator/beam:$PATH_EXE/erlang/otp/erts/include/x86_64-pc-linux-gnu
+    # gcc env path for libapl.so
+    export LIBRARY_PATH=$PATH_BIN/.libs
+    ./configure "--with-erlang" $CONFIGURE_OPTIONS
+    make
   fi
-  ./configure $WITH_ERLANG $CONFIGURE_OPTIONS
+  ./configure $CONFIGURE_OPTIONS
   make
 fi
 establish-elo "$PATH_BIN" "$FILE_BIN"
