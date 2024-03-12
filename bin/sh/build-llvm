@@ -1,0 +1,44 @@
+#!/bin/sh
+#
+#   Copyright © 2024 Christopher Augustus
+#
+#   This Source Code Form is subject to the terms of the Mozilla Public
+#   License, v. 2.0. If a copy of the MPL was not distributed with this
+#   file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+if [ "$PATH_EXE" = "" ]; then
+  echo "Failed because PATH_EXE is not defined."
+  exit 1
+fi
+cd $PATH_EXE
+PATH_REPO="$PATH_EXE/llvm-project"
+PATH_BUILD=$PATH_REPO/"build"
+PATH_BIN=$PATH_BUILD/"bin"
+FILE_BIN="clang-18"
+if [ ! -d $PATH_REPO ]; then
+  git clone -v git@github.com:aboalang/llvm-project
+fi
+if [ ! -f $PATH_BIN/$FILE_BIN ] || [ "${*%force}" != "$*" ]; then
+  cd $PATH_REPO
+  git checkout llvmorg-18.1.1
+  mkdir -p $PATH_BUILD
+  cd $PATH_BUILD
+  case $(uname) in
+    Darwin) # NOTE: this may not work or be necessary with newer macOS due to its SIP
+      TARGET=AArch64
+      TRIPLE=arm64-apple-darwin$(uname -r)
+      ;;
+    *) # assume GNU/Linux or WSL
+      TARGET=X86
+      TRIPLE=x86_64-unknown-linux-gnu
+      ;;
+  esac
+  cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_INSTALL_PREFIX=$PATH_REPO -DLLVM_DEFAULT_TARGET_TRIPLE=$TRIPLE -DLLVM_ENABLE_PROJECTS=clang -DLLVM_TARGETS_TO_BUILD=$TARGET -G "Unix Makefiles" ../llvm
+  make
+fi
+establish-elo "$PATH_BIN" "$FILE_BIN" "clang"
+establish-elo "$PATH_BIN" "$FILE_BIN" "clang++"
+establish-elo "$PATH_BIN" "$FILE_BIN" "clang-cl"
+establish-elo "$PATH_BIN" "$FILE_BIN" "clang-cpp"
+establish-elo "$PATH_BIN" "llc"
+establish-elo "$PATH_BIN" "lli"
