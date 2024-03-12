@@ -19,9 +19,7 @@ fi
 if [ ! -f $PATH_REPO/$FILE_BIN ] || [ "${*%force}" != "$*" ]; then
   cd $PATH_REPO
   git checkout v0.6.0
-  #make clean
-  #make c-makeonly nogit=1 notui=1 singeli=0 target_os=linux
-  # TODO: ### ^ FAILS ON WSL1, gcc 7.5.0
-  make
+  make clean
+  make o3n CC=clang CXX=clang++ FFI=0
 fi
 establish-elo "$PATH_REPO" "$FILE_BIN"
