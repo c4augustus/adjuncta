@@ -1,4 +1,0 @@
-#!/bin/sh
-export PATH_RACKET=$PATH_RUN/racket
-export PATH_RACKET_BIN=$PATH_RACKET/bin
-export PATH=$PATH_RACKET_BIN:$PATH

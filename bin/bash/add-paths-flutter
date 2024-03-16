@@ -1,5 +1,0 @@
-#!/bin/sh
-export PATH_RUN=$HOME/z/u/run
-export PATH_FLUTTER=$PATH_RUN/flutter
-export PATH_FLUTTER_BIN=$PATH_FLUTTER/bin
-export PATH=$PATH_FLUTTER_BIN:$PATH

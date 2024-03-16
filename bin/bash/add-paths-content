@@ -1,4 +1,0 @@
-#!/bin/sh
-export PATH_CONTENT=$HOME/z/v/content
-export PATH_CONTENT_BIN=$PATH_CONTENT/farm/commune/aid/bin
-export PATH=$PATH_CONTENT_BIN:$PATH

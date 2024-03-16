@@ -1,4 +1,0 @@
-#!/bin/sh
-export PATH_RUN_GAMBIT=$PATH_RUN/gambit
-export PATH_RUN_GAMBIT_BIN=$PATH_RUN_GAMBIT/bin
-export PATH=$PATH_RUN_GAMBIT_BIN:$PATH
