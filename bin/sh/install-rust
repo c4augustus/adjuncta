@@ -1,0 +1,41 @@
+#!/bin/sh
+#
+#   Copyright © 2024 Christopher Augustus
+#
+#   This Source Code Form is subject to the terms of the Mozilla Public
+#   License, v. 2.0. If a copy of the MPL was not distributed with this
+#   file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+if [ "$PATH_EXE" = "" ]; then
+  echo "Failed because PATH_EXE is not defined."
+  exit 1
+fi
+PATH_GROUP="$PATH_EXE/rust-lang"
+PATH_REPO="$PATH_GROUP/rustup"
+PATH_BIN="$HOME/.cargo/bin"
+mkdir -p $PATH_GROUP
+cd $PATH_GROUP
+if [ ! -d $PATH_REPO ]; then
+  git clone git@github.com:aboalang/rustup
+fi
+if [ ! -f $PATH_BIN/cargo ] || [ "${*%force}" != "$*" ]; then
+  cd $PATH_REPO
+  git checkout 1.27.0
+  case $(uname) in
+    Darwin) # NOTE: this may not work or be necessary with newer macOS due to its SIP
+      TRIPLE="arm64-apple-darwin$(uname -r)"
+      DEFAULT_HOST="--default-host=$TRIPLE"
+      DEFAULT_TOOLCHAIN="--default-host stable-$TRIPLE"
+      ;;
+    Linux) # GNU/Linux or WSL
+      TRIPLE="x86_64-unknown-linux-gnu"
+      DEFAULT_HOST="--default-host $TRIPLE"
+      DEFAULT_TOOLCHAIN="--default-toolchain stable-$TRIPLE"
+      ;;
+    *) # let it decide for itself
+      ;;
+  esac
+  ./rustup-init.sh $DEFAULT_HOST $DEFAULT_TOOLCHAIN --no-modify-path -y
+fi
+establish-elo "$PATH_BIN" "cargo"
+establish-elo "$PATH_BIN" "rustup"
