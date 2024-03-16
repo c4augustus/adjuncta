@@ -1,0 +1,26 @@
+#!/bin/sh
+#
+#   Copyright © 2024 Christopher Augustus
+#
+#   This Source Code Form is subject to the terms of the Mozilla Public
+#   License, v. 2.0. If a copy of the MPL was not distributed with this
+#   file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+if [ "$PATH_EXE" = "" ]; then
+  echo "Failed because PATH_EXE is not defined."
+  exit 1
+fi
+PATH_GROUP="$PATH_EXE/gleam-lang"
+PATH_REPO="$PATH_GROUP/gleam"
+PATH_BIN="$PATH_REPO/target/release"
+mkdir -p $PATH_GROUP
+cd $PATH_GROUP
+if [ ! -d $PATH_REPO ]; then
+  git clone git@github.com:aboalang/gleam
+fi
+if [ ! -f $PATH_BIN/gleam ] || [ "${*%force}" != "$*" ]; then
+  cd $PATH_REPO
+  git checkout v1.0.0 # !!! requires rustc 1.73.0+
+  cargo build --release
+fi
+establish-elo "$PATH_BIN" "gleam"
