@@ -1,0 +1,36 @@
+#!/bin/sh
+#
+#   Copyright © 2024 Christopher Augustus
+#
+#   This Source Code Form is subject to the terms of the Mozilla Public
+#   License, v. 2.0. If a copy of the MPL was not distributed with this
+#   file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+if [ "$PATH_EXE" = "" ]; then
+  echo "Failed because PATH_EXE is not defined."
+  exit 1
+fi
+cd $PATH_EXE
+PATH_REPO="$PATH_EXE/jsource"
+if [ ! -d $PATH_REPO ]; then
+  git clone -v git@github.com:aboalang/jsource
+fi
+case $(uname) in
+  Darwin) # NOTE: this may not work or be necessary with newer macOS due to its SIP
+    export jplatform=darwin
+    export j64x=j64arm
+    ;;
+  *) # assume POSIX
+    export jplatform=linux
+    export j64x=j64
+    ;;
+esac
+PATH_BIN="$PATH_REPO/bin/$jplatform/$j64x"
+FILE_BIN="jconsole"
+if [ ! -f $PATH_BIN/$FILE_BIN ] || [ "${*%force}" != "$*" ]; then
+  cd $PATH_REPO
+  git checkout 9.5.1
+  cd make2
+  ./build_all.sh
+fi
+establish-elo-ld "$PATH_EXE/gmp/.libs:$PATH_BIN" "$PATH_BIN" "$FILE_BIN"
