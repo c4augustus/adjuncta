@@ -1,0 +1,34 @@
+#!/bin/sh
+#
+#   Copyright © 2024 Christopher Augustus
+#
+#   This Source Code Form is subject to the terms of the Mozilla Public
+#   License, v. 2.0. If a copy of the MPL was not distributed with this
+#   file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+if [ "$PATH_EXE_ELO" = "" ]; then
+  echo "Failed because PATH_EXE_ELO is not defined."
+  exit 1
+fi
+if [ $# -lt 3 ]; then
+  echo "Usage: $0 <LD_LIBRARY_PATH> <target base path> <target file name> [<link name if different>]"
+  exit 1
+fi
+TARGET="$2/$3"
+if [ $# -lt 4 ]; then
+  ELO="$PATH_EXE_ELO/$3"
+else
+  ELO="$PATH_EXE_ELO/$2"
+fi
+if [ ! -f $ELO ]; then
+  case $(uname) in
+    Darwin) # NOTE: this may not work or be necessary with newer macOS due to its SIP
+      export LD_NAME="DYLD_LIBRARY_PATH"
+      ;;
+    *) # assume POSIX
+      export LD_NAME="LD_LIBRARY_PATH"
+      ;;
+  esac
+  echo "#!/bin/sh\n$LD_NAME=$1 $TARGET \$@" >$ELO
+  chmod 755 $ELO
+fi
