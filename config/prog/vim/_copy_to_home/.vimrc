@@ -59,7 +59,10 @@ autocmd FileType groovy colorscheme antares
   " ^ black, gray, ash, green, orange
 autocmd FileType html colorscheme fokus
 autocmd FileType idris colorscheme onedark
-"autocmd FileType idris colorscheme colorsbox-steighties
+autocmd FileType j colorscheme pw
+"autocmd FileType j colorscheme Monokai
+"autocmd FileType j colorscheme vilight
+"autocmd FileType j colorscheme xoria256
 autocmd FileType javascript colorscheme CandyPaper-unblack
 "autocmd FileType javascript colorscheme kib_darktango
 autocmd FileType java colorscheme jellybeans
