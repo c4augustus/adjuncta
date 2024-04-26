@@ -12,7 +12,7 @@ if [ "$PATH_EXE" = "" ]; then
 fi
 PATH_GROUP="$PATH_EXE/nodejs"
 PATH_REPO="$PATH_GROUP/node"
-PATH_BIN="$PATH_REPO/out/Release"
+PATH_BIN="$PATH_REPO/bin"
 FILE_BIN="node"
 mkdir -p $PATH_GROUP
 cd $PATH_GROUP
@@ -24,5 +24,8 @@ if [ ! -f "$PATH_BIN/$FILE_BIN" ] || [ "${*%force}" != "$*" ]; then
   git checkout v22.0.0
   ./configure --prefix $PATH_REPO
   make -j4
+  make install
 fi
 establish-elo "$PATH_BIN" "$FILE_BIN"
+establish-elo "$PATH_BIN" "npm"
+establish-elo "$PATH_BIN" "npx"
