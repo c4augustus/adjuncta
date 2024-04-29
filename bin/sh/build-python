@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#   Copyright © 2023 Christopher Augustus
+#   Copyright © 2023 - 2024 Christopher Augustus
 #
 #   This Source Code Form is subject to the terms of the Mozilla Public
 #   License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -12,7 +12,11 @@ if [ "$PATH_EXE" = "" ]; then
 fi
 PATH_GROUP="$PATH_EXE/python"
 PATH_REPO="$PATH_GROUP/cpython"
-FILE_BIN="python.exe"
+UNAMER="$(uname -r)"
+if [ "$UNAMER" != "${UNAMER%Microsoft}" ]; then # WSL
+  EXT_BIN=".exe"
+fi
+FILE_BIN="python"$EXT_BIN
 mkdir -p $PATH_GROUP
 cd $PATH_GROUP
 if [ ! -d $PATH_REPO ]; then
@@ -23,6 +27,12 @@ if [ ! -f $PATH_REPO/$FILE_BIN ] || [ "${*%force}" != "$*" ]; then
     Darwin) # NOTE: this may not work or be necessary with newer macOS due to its SIP
       # !!! need to force it pick up only the MacPorts libs like gettext for libintl
       export LDFLAGS="-L /opt/local/lib"
+      ;;
+    Linux)
+      echo "### NOTE: OpenSSL source (ssl.h) is required and on ubuntu is installed by:"
+      echo "sudo apt-get install libssl-dev"
+      echo "### NOTE: AND pip DOES NOT WORK WITHOUT zlib"
+      echo "which is not available for Ubuntu < 20"
       ;;
     *) # assume POSIX
       ;;
