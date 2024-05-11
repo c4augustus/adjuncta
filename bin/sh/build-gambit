@@ -1,0 +1,31 @@
+#!/bin/sh
+#
+#   Copyright © 2023 - 2024 Christopher Augustus
+#
+#   This Source Code Form is subject to the terms of the Mozilla Public
+#   License, v. 2.0. If a copy of the MPL was not distributed with this
+#   file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+if [ "$PATH_EXE" = "" ]; then
+  echo "Failed because PATH_EXE is not defined."
+  exit 1
+fi
+PATH_GROUP="$PATH_EXE/gambit"
+PATH_REPO="$PATH_GROUP/gambit"
+PATH_BIN_GSC="$PATH_REPO/gsc"
+PATH_BIN_GSI="$PATH_REPO/gsi"
+FILE_BIN_GSC="gsc"
+FILE_BIN_GSI="gsi"
+mkdir -p $PATH_GROUP
+cd $PATH_GROUP
+if [ ! -d $PATH_REPO ]; then
+  git clone -v git@github.com:aboalang/gambit
+fi
+if [ ! -f "$PATH_BIN_GSI/$FILE_BIN_GSI" ] || [ "${*%force}" != "$*" ]; then
+  cd $PATH_REPO
+  git checkout v4.9.5
+  ./configure --prefix $PATH_REPO
+  make -j4
+fi
+establish-elo "$PATH_BIN_GSC" "$FILE_BIN_GSC"
+establish-elo "$PATH_BIN_GSI" "$FILE_BIN_GSI"
