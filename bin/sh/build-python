@@ -28,11 +28,11 @@ if [ ! -f $PATH_REPO/$FILE_BIN ] || [ "${*%force}" != "$*" ]; then
       # !!! need to force it pick up only the MacPorts libs like gettext for libintl
       export LDFLAGS="-L /opt/local/lib"
       ;;
-    Linux)
+    Linux) # or WSL
       echo "### NOTE: OpenSSL source (ssl.h) is required and on ubuntu is installed by:"
       echo "sudo apt-get install libssl-dev"
-      echo "### NOTE: AND pip DOES NOT WORK WITHOUT zlib"
-      echo "which is not available for Ubuntu < 20"
+      echo "### NOTE: zlib is required by pip and on ubuntu is installed by:"
+      echo "sudo apt-get install zlib1g-dev"
       ;;
     *) # assume POSIX
       ;;
