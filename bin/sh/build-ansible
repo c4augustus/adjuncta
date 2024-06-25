@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#   Copyright © 2023 Christopher Augustus
+#   Copyright © 2023 - 2024 Christopher Augustus
 #
 #   This Source Code Form is subject to the terms of the Mozilla Public
 #   License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -22,6 +22,15 @@ if [ ! -d $PATH_REPO ] || [ "${*%force}" != "$*" ]; then
   git checkout v2.16.1
   pip install .
   pip install -r requirements.txt
+  pip install paramiko
+fi
+PATH_MITOGEN="$PATH_GROUP/mitogen"
+if [ ! -d $PATH_MITOGEN ] || [ "${*%force}" != "$*" ]; then
+  if [ ! -d $PATH_MITOGEN ]; then
+    git clone -v git@github.com:AlkalineGames/mitogen
+  fi
+  cd $PATH_MITOGEN
+  git checkout v0.3.7
 fi
 PATH_BIN="$PATH_REPO/bin"
 establish-elo "$PATH_BIN" "ansible"
