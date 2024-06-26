@@ -23,6 +23,7 @@ if [ ! -d $PATH_REPO ] || [ "${*%force}" != "$*" ]; then
   pip install .
   pip install -r requirements.txt
   pip install paramiko
+  pip install passlib
 fi
 PATH_MITOGEN="$PATH_GROUP/mitogen"
 if [ ! -d $PATH_MITOGEN ] || [ "${*%force}" != "$*" ]; then
