@@ -1,0 +1,28 @@
+#!/bin/sh
+#
+#   Copyright © 2024 Christopher Augustus
+#
+#   This Source Code Form is subject to the terms of the Mozilla Public
+#   License, v. 2.0. If a copy of the MPL was not distributed with this
+#   file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+if [ "$PATH_EXE" = "" ]; then
+  echo "Failed because PATH_EXE is not defined."
+  exit 1
+fi
+cd $PATH_EXE
+REPO="ngn-k"
+PATH_REPO="$PATH_EXE/$REPO"
+FILE_BIN="k"
+if [ ! -d $PATH_REPO ]; then
+  #git clone -v https://codeberg.org/ngn/k.git $REPO
+  git clone -v git@gitlab.com:aboa/$REPO
+fi
+if [ ! -f $PATH_REPO/$FILE_BIN ] || [ "${*%force}" != "$*" ]; then
+  cd $PATH_REPO
+  git checkout aboa-stable
+  make
+fi
+### TODO: k as a single letter isn't a great name, but the repl.k requires it
+establish-elo "$PATH_REPO" "$FILE_BIN"
+establish-elo "$PATH_REPO" "repl.k"
