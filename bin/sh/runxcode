@@ -1,0 +1,2 @@
+#!/bin/sh
+/Applications/Xcode.app/Contents/MacOS/Xcode *.xcworkspace &
