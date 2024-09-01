@@ -1,11 +1,11 @@
-" ## customized [2024.02.09 c4augustus]
+" ## customized [2024.09.01 c4augustus]
 set expandtab
 set hls
 set noautoindent
 set nocindent
 set nowrap
 set ruler
-set runtimepath=$VIMRUNTIME,~/z/v/adjuncta/config/prog/vim
+set runtimepath=$VIMRUNTIME,~/z/v/a/config/prog/vim
 set tabstop=2
 set vb t_vb=
 syntax on
