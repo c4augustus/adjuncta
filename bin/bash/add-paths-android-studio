@@ -3,12 +3,12 @@ case $(uname) in
     Darwin)
         export ANDROID_HOME=$HOME/Library/Android/sdk
         export ANDROID_SDK_HOME=$ANDROID_HOME
-        export ASTUDIO_HOME="/Applications/Android Studio.app/Contents"
-        export JAVA_HOME=$ASTUDIO_HOME/jbr/Contents/home
+        export ASTUDIO_HOME="$HOME/Applications/Android Studio.app/Contents"
+        export JAVA_HOME=$ASTUDIO_HOME/jbr/Contents/Home
         # !!! ALL OF THIS IS REQUIRED TO BUILD UE APPS FOR ANDROID:
         export NDK_ROOT=$ANDROID_HOME/ndk/25.1.8937393
         export NDKROOT=$NDK_ROOT
-        export PATH_ANDROID_BUILD_TOOLS=$ANDROID_HOME/build-tools/32.0.0
+        export PATH_ANDROID_BUILD_TOOLS=$ANDROID_HOME/build-tools/35.0.0
         export PATH_ANDROID_PLATFORM_TOOLS=$ANDROID_HOME/platform-tools
         export PATH_ANDROID_TOOLS=$ANDROID_HOME/tools/bin
         ;;
