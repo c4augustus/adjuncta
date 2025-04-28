@@ -59,7 +59,7 @@ syntax keyword aboaBuiltinS7 abs acos apply ash asin atan ceiling complex cos co
 syntax keyword aboaTodo contained FIXME TODO
 
 syntax match aboaComment "#.*$" contains=aboaTodo
-syntax region aboaComment  matchgroup=aboaCommentBlock start="#!" end="!#" contains=aboaTodo
+syntax region aboaComment  matchgroup=aboaCommentBlock start="#(" end=")#" contains=aboaTodo
 syntax match aboaError "!#"
   " ^ unpaired closed aboaCommentBlock
 
