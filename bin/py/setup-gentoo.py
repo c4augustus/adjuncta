@@ -68,39 +68,49 @@ def establish_partitions():
     print('...drive partitions...')
     print('---------------------------')
     wiped = False
-    devtarget = '/dev/sda'
-    partboot = devtarget + '1'
-    partroot = devtarget + '3'
-    sizeboot = '1342MB'
+    devtarget = '/dev/sda' ### TODO: HARDCODED
     result = run_shell_command('parted ' + devtarget + ' print')
     if result.stdout.find('Partition Table: gpt') < 0:
         if not wiped and not ask_ok('WIPE and re-partition ' + devtarget + ' to GPT'):
             cancel()
         run_shell_command('parted --script ' + devtarget + ' mklabel gpt')
         wiped = True
+        bootpart    = '1'
+        bootstart   = '2048s'
+        bootend     = '1342MB'
+        rootpart    = '3'
+        rootfs      = 'ext4 -L'
+    else: ### TODO: HARDCODED to ISO of minimal install, so deduce this instead from the print out
+        bootpart    = '1'
+        bootstart   = '814MB'
+        bootend     = '2156MB'
+        rootpart    = '4'
+        rootfs      = 'f2fs -l'
+    devboot = devtarget + bootpart
+    devroot = devtarget + rootpart
     if result.stdout.find('genboot') < 0:
-        if not wiped and not ask_ok('CREATE boot partition ' + partboot):
+        if not wiped and not ask_ok('CREATE boot partition ' + bootpart):
             cancel()
         run_shell_command('parted --script ' + devtarget +
-                          ' mkpart primary 2048s ' + sizeboot)
+                          ' mkpart primary ' + bootstart + ' ' + bootend)
         run_shell_command('parted --script ' + devtarget +
-                          " name 1 'genboot'")
+                          " name " + bootpart + " 'genboot'")
         run_shell_command('parted --script ' + devtarget +
-                          ' set 1 boot on')
-        run_shell_command('mkfs.vfat -n GENBOOT ' + partboot)
+                          ' set ' + bootpart + ' boot on')
+        run_shell_command('mkfs.vfat -n genboot ' + devboot)
     if result.stdout.find('genroot') < 0:
-        if not wiped and not ask_ok('CREATE root partition ' + partroot):
+        if not wiped and not ask_ok('CREATE root partition ' + rootpart):
             cancel()
         run_shell_command('parted --script ' + devtarget +
-                          ' mkpart primary ' + sizeboot + ' 100%')
+                          ' mkpart primary ' + bootend + ' 100%')
         run_shell_command('parted --script ' + devtarget +
-                          " name 3 'genroot'")
-        run_shell_command('mkfs.f2fs -n GENROOT ' + partroot)
+                          " name " + rootpart + " 'genroot'")
+        run_shell_command('mkfs.' + rootfs + ' genroot ' + devroot)
         result = run_shell_command('parted ' + devtarget + ' print')
     result = run_shell_command('parted ' + devtarget + ' print')
     print(result.stdout)
     print('---------------------------')
-    return (partboot,partroot)
+    return (devboot,devroot)
 
 def first_file_found_matching(filepath, filename):
     with os.scandir(filepath) as it:
@@ -134,11 +144,11 @@ def acquire_stage3(gentoodate):
     print('---------------------------')
     return os.path.join(filepath, filenamefinal)
 
-def establish_stage3(partroot, pathmount, gentoodate):
+def establish_stage3(rootpart, pathmount, gentoodate):
     print('...establishing stage3...')
     print('---------------------------')
     run_shell_command('umount ' + pathmount, abort_on_error=False)
-    result = run_shell_command('mount ' + partroot + ' ' + pathmount, abort_on_error=False)
+    result = run_shell_command('mount ' + rootpart + ' ' + pathmount, abort_on_error=False)
     if result.returncode and not 'already mounted' in result.stderr:
         abort(result.stderr)
     setdiff = (set(
@@ -263,8 +273,8 @@ def main():
     gentoodate = '20251130'
     dirmount = 'gentoo'
     pathmount = '/mnt/' + dirmount
-    (partboot, partroot) = establish_partitions()
-    establish_stage3(partroot, pathmount, gentoodate)
+    (bootpart, rootpart) = establish_partitions()
+    establish_stage3(rootpart, pathmount, gentoodate)
     prepare_portage(pathmount, gentoodate)
     perform_chroot(dirmount)
     print('=================================================')
