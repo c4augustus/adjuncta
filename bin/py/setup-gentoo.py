@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-#   Copyright 2021 Christopher Augustus
+#   Copyright © 2021 - 2025 Christopher Augustus
 #
 #   This Source Code Form is subject to the terms of the Mozilla Public
 #   License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -87,7 +87,7 @@ def establish_partitions():
                           " name 1 'genboot'")
         run_shell_command('parted --script ' + devtarget +
                           ' set 1 boot on')
-        run_shell_command('mkfs.ext4 -L GENBOOT ' + partboot)
+        run_shell_command('mkfs.vfat -n GENBOOT ' + partboot)
     if result.stdout.find('genroot') < 0:
         if not wiped and not ask_ok('CREATE root partition ' + partroot):
             cancel()
@@ -95,7 +95,7 @@ def establish_partitions():
                           ' mkpart primary ' + sizeboot + ' 100%')
         run_shell_command('parted --script ' + devtarget +
                           " name 3 'genroot'")
-        run_shell_command('mkfs.ext4 -L GENROOT ' + partroot)
+        run_shell_command('mkfs.f2fs -n GENROOT ' + partroot)
         result = run_shell_command('parted ' + devtarget + ' print')
     result = run_shell_command('parted ' + devtarget + ' print')
     print(result.stdout)
@@ -184,7 +184,7 @@ def establish_config_file_entry(filespec, key, value):
 
 def acquire_portage(gentoodate):
     print('...acquiring portage...')
-    print('---------------------------')
+    print('-----------------------')
     filepath = os.path.dirname(abspath_of_ancestor_dir('v')) + '/u/soft/open/gentoo'
     filename = 'portage-' + gentoodate + '.tar.xz'
     filere   = '^portage-' + gentoodate + '\.tar\.xz$'
@@ -198,12 +198,12 @@ def acquire_portage(gentoodate):
         filenamefinal = first_file_found_matching(filepath, filere)
         if filenamefinal == '':
             abort('failed to find or download ' + filename)
-    print('---------------------------')
+    print('-----------------------')
     return os.path.join(filepath, filenamefinal)
 
-def establish_portage(pathmount, gentoodate):
-    print('...establishing portage...')
-    print('--------------------------')
+def prepare_portage(pathmount, gentoodate):
+    print('...preparing portage...')
+    print('-----------------------')
     pathusr = pathmount + '/usr'
     pathportage = pathusr + '/portage'
     try:
@@ -223,10 +223,14 @@ def establish_portage(pathmount, gentoodate):
     run_shell_command('ls ' + pathportage, capture=False)
     pathmakeconf = pathmount + '/etc/portage/make.conf'
     establish_config_file_entry(pathmakeconf, 'GENTOO_MIRRORS',
-        "https://ftp.rnl.tecnico.ulisboa.pt/pub/gentoo/gentoo-distfiles/ http://ftp.rnl.tecnico.ulisboa.pt/pub/gentoo/gentoo-distfiles/ ftp://ftp.rnl.tecnico.ulisboa.pt/pub/gentoo/gentoo-distfiles/ rsync://ftp.rnl.tecnico.ulisboa.pt/pub/gentoo/gentoo-distfiles/")
-    print('--------------------------')
+        #ftp://ftp.rnl.tecnico.ulisboa.pt/pub/gentoo/gentoo-distfiles/ \
+        #http://ftp.rnl.tecnico.ulisboa.pt/pub/gentoo/gentoo-distfiles/ \
+        '"https://ftp.rnl.tecnico.ulisboa.pt/pub/gentoo/gentoo-distfiles/"')
+        #rsync://ftp.rnl.tecnico.ulisboa.pt/pub/gentoo/gentoo-distfiles/ \
+        #rsync://umbriel.br.ext.planetunix.net/gentoo/"
+    print('-----------------------')
 
-def establish_chroot(dirmount):
+def perform_chroot(dirmount):
     print('...establishing chroot...')
     print('-------------------------')
     if dirmount in set(os.listdir('/mnt')):
@@ -245,22 +249,24 @@ def establish_chroot(dirmount):
         ##if not os.path.isfile(pathscriptafterroot):
         run_shell_command('cp ' + pathscriptafterthis
                 + ' ' + pathmount + pathscriptafterroot, capture=False)
-        run_shell_command('arch-chroot ' + pathmount
-            + ' /bin/bash --rcfile <(echo ". /etc/.bashrc; . /etc/profile; export PS1="(chroot) ${PS1}"; python '
-            + pathscriptafterroot + '")', capture=False)
+        run_shell_command('cp /etc/resolv.conf '+pathmount+'/etc', capture=False)
+        run_shell_command('arch-chroot '+pathmount+' '
+            ### TODO: WHY DO WE NEED THIS?:
+            #+ ' /bin/bash --rcfile <(echo ". /etc/.bashrc; . /etc/profile; export PS1="(chroot) ${PS1}"; python '
+            + pathscriptafterroot, capture=False)
     print('-------------------------')
 
 def main():
     print('Setup Gentoo installation...')
     print('============================')
     check_platform('Linux')
-    gentoodate = '20240229'
+    gentoodate = '20251130'
     dirmount = 'gentoo'
     pathmount = '/mnt/' + dirmount
     (partboot, partroot) = establish_partitions()
     establish_stage3(partroot, pathmount, gentoodate)
-    establish_portage(pathmount, gentoodate)
-    establish_chroot(dirmount)
+    prepare_portage(pathmount, gentoodate)
+    perform_chroot(dirmount)
     print('=================================================')
     print('...completed ENTIRE setup of Gentoo installation.')
 
