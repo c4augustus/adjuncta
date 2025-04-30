@@ -67,6 +67,7 @@ def pick_iso_file():
     return '###unknown###'
 
 def burn_iso_to_dev(iso, dev):
+    run_shell_command('diskutil unmountDisk '+dev)
     run_shell_command('sudo dd if='+iso+' of='+dev+' bs=1m')
     print('Burned '+iso+' to USB drive '+dev)
 
