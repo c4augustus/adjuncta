@@ -125,26 +125,29 @@ def abspath_of_ancestor_dir(name):
         apath = os.path.dirname(apath)
     return apath
 
-def acquire_stage3(gentoodate):
+def acquire_stage3(gentootime):
     print('...acquiring stage3...')
     print('---------------------------')
     filepath = os.path.dirname(abspath_of_ancestor_dir('v')) + '/u/soft/open/gentoo'
-    filename = 'stage3-amd64-desktop-openrc-' + gentoodate + 'T??????Z.tar.xz'
-    filere   = '^stage3-amd64-desktop-openrc-' + gentoodate + 'T......Z\.tar\.xz$'
+    ## !!! no longer matching against any time value
+    ##filename = 'stage3-amd64-desktop-openrc-' + gentoodate + 'T??????Z.tar.xz'
+    ##filere   = '^stage3-amd64-desktop-openrc-' + gentoodate + 'T......Z\.tar\.xz$'
+    filename = 'stage3-amd64-desktop-openrc-' + gentootime + '.tar.xz'
+    filere   = '^stage3-amd64-desktop-openrc-' + gentootime + '\.tar\.xz$'
     filespec = filepath + filename
     os.makedirs(filepath, mode=755, exist_ok=True)
     filenamefinal = first_file_found_matching(filepath, filere)
     if filenamefinal == '':
-        site = 'ftp://ftp.rnl.tecnico.ulisboa.pt/pub/gentoo/gentoo-distfiles'
-        url = site + '/releases/amd64/autobuilds/current-stage3-amd64/' + filename
-        run_shell_command('wget -P ' + filepath + ' ' + url)
+        site = 'https://ftp.rnl.tecnico.ulisboa.pt/pub/gentoo/gentoo-distfiles'
+        url = site + '/releases/amd64/autobuilds/' + gentootime + '/' + filename
+        run_shell_command('wget -P ' + filepath + ' ' + url, capture=False)
         filenamefinal = first_file_found_matching(filepath, filere)
         if filenamefinal == '':
             abort('failed to find or download ' + filename)
     print('---------------------------')
     return os.path.join(filepath, filenamefinal)
 
-def establish_stage3(rootpart, pathmount, gentoodate):
+def establish_stage3(rootpart, pathmount, gentootime):
     print('...establishing stage3...')
     print('---------------------------')
     run_shell_command('umount ' + pathmount, abort_on_error=False)
@@ -159,10 +162,12 @@ def establish_stage3(rootpart, pathmount, gentoodate):
     if setdiff != set():
         print('......missing ' + pathmount + ' subdirectories: ' + str(setdiff))
         print('......extracting stage3...')
-        run_shell_command('tar -xpvf ' + acquire_stage3(gentoodate) +
+        result = run_shell_command('tar -xpvf ' + acquire_stage3(gentootime) +
             " --xattrs-include='*.*' --numeric-owner -C, --directory=" + pathmount,
             capture=False)
-    run_shell_command('ls -alF ' + pathmount, capture=False)
+        if not result.returncode:
+            run_shell_command('cp -av /root/z ' + pathmount + '/root', capture=False)
+            run_shell_command('ls -alF ' + pathmount, capture=False)
     print('---------------------------')
 
 def establish_config_file_entry(filespec, key, value):
@@ -192,19 +197,19 @@ def establish_config_file_entry(filespec, key, value):
         outfile.writelines(lines)
     print(f'{filespec}: {entry}')
 
-def acquire_portage(gentoodate):
+def acquire_portage(pathmount, gentoodate):
     print('...acquiring portage...')
     print('-----------------------')
-    filepath = os.path.dirname(abspath_of_ancestor_dir('v')) + '/u/soft/open/gentoo'
+    filepath = pathmount + '/root/z/u/soft/open/gentoo'
     filename = 'portage-' + gentoodate + '.tar.xz'
     filere   = '^portage-' + gentoodate + '\.tar\.xz$'
     filespec = filepath + filename
     os.makedirs(filepath, mode=755, exist_ok=True)
     filenamefinal = first_file_found_matching(filepath, filere)
     if filenamefinal == '':
-        site = 'ftp://ftp.rnl.tecnico.ulisboa.pt/pub/gentoo/gentoo-distfiles'
-        url = site + '/releases/amd64/autobuilds/current-stage3-amd64/' + filename
-        run_shell_command('wget -P ' + filepath + ' ' + url)
+        site = 'https://ftp.rnl.tecnico.ulisboa.pt/pub/gentoo/gentoo-distfiles/snapshots/'
+        url = site + filename
+        run_shell_command('wget -P ' + filepath + ' ' + url, capture=False)
         filenamefinal = first_file_found_matching(filepath, filere)
         if filenamefinal == '':
             abort('failed to find or download ' + filename)
@@ -227,7 +232,7 @@ def prepare_portage(pathmount, gentoodate):
     if setdiff != set():
         print('......missing ' + pathportage + ' subdirectories: ' + str(setdiff))
         print('......extracting portage...')
-        run_shell_command('tar -xpvf ' + acquire_portage(gentoodate) +
+        run_shell_command('tar -xpvf ' + acquire_portage(pathmount, gentoodate) +
             " --xattrs-include='*.*' --numeric-owner -C, --directory=" + pathusr,
             capture=False)
     run_shell_command('ls ' + pathportage, capture=False)
@@ -271,10 +276,11 @@ def main():
     print('============================')
     check_platform('Linux')
     gentoodate = '20251130'
+    gentootime = gentoodate + 'T164554Z'
     dirmount = 'gentoo'
     pathmount = '/mnt/' + dirmount
     (bootpart, rootpart) = establish_partitions()
-    establish_stage3(rootpart, pathmount, gentoodate)
+    establish_stage3(rootpart, pathmount, gentootime)
     prepare_portage(pathmount, gentoodate)
     perform_chroot(dirmount)
     print('=================================================')
