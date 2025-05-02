@@ -73,23 +73,33 @@ def establish_portage(profile):
         run_shell_command('eselect profile set '+profile, capture=False)
     print('--------------------------')
 
-def establish_grub():
+def establish_grub(devboot):
     print('...establishing grub...')
     print('-----------------------')
     result = run_shell_command('which grub-install', abort_on_error=False)
     if not '/grub-install' in result.stdout:
-        run_shell_command('emerge sys-boot/grub', capture=False)
+        run_shell_command('emerge --ask sys-boot/grub',         capture=False)
+    run_shell_command('mkdir -p /efi',                          capture=False)
+    run_shell_command('mount '+devboot+' /efi',                 capture=False)
+    if not os.path.isfile('/efi/EFI/gentoo/grubx64.efi'):
+        run_shell_command('grub-install --efi-directory=/efi',  capture=False)
     print('-----------------------')
 
-def establish_boot(devboot, dirboot):
+def establish_kernel():
+    print('...establishing kernel...')
+    print('-------------------------')
+    run_shell_command('echo "sys-kernel/installkernel dracut grub" >/etc/portage/package.use/installkernel')
+    run_shell_command('emerge sys-kernel/installkernel',      capture=False)
+    run_shell_command('emerge sys-kernel/gentoo-kernel-bin',  capture=False)
+    ask_ok('continue')
+    print('-----------------------')
+
+def establish_boot(devroot):
     print('...establishing boot...')
     print('-----------------------')
-    run_shell_command('mkdir -p '                    +dirboot,     capture=False)
-    result = run_shell_command('mount')
-    if                             devboot+' on '    +dirboot in result.stdout:
-        run_shell_command('mount '+devboot+' '       +dirboot,     capture=False)
-    run_shell_command('grub-install --efi-directory='+dirboot,     capture=False)
-    run_shell_command('ls -alF '                     +dirboot,     capture=False)
+    run_shell_command('ls -alFh /boot',                         capture=False)
+    run_shell_command('rm -f /boot/grub/grub.cfg',              capture=False)
+    run_shell_command('grub-mkconfig -o /boot/grub/grub.cfg',   capture=False)
     print('-----------------------')
 
 def main():
@@ -99,10 +109,11 @@ def main():
     check_platform('Linux')
     establish_chrooted('gentoo')
     establish_portage('default/linux/amd64/23.0/desktop')
-    establish_grub()
-    #devboot = '/dev/sda1'
-    #dirboot = '/efi'
-    #establish_boot(devboot, dirboot)
+    devboot = '/dev/sda1'
+    establish_grub(devboot)
+    establish_kernel()
+    #devroot = '/dev/sda4'
+    #establish_boot(devroot)
     print('=================================================')
     print('...completed CHROOT setup of Gentoo installation.')
 

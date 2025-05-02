@@ -75,36 +75,36 @@ def establish_partitions():
             cancel()
         run_shell_command('parted --script ' + devtarget + ' mklabel gpt')
         wiped = True
-        bootpart    = '1'
+        partboot    = '1'
         bootstart   = '2048s'
         bootend     = '1342MB'
-        rootpart    = '3'
+        partroot    = '3'
         rootfs      = 'ext4 -L'
     else: ### TODO: HARDCODED to ISO of minimal install, so deduce this instead from the print out
-        bootpart    = '1'
+        partboot    = '1'
         bootstart   = '814MB'
         bootend     = '2156MB'
-        rootpart    = '4'
+        partroot    = '4'
         rootfs      = 'f2fs -l'
-    devboot = devtarget + bootpart
-    devroot = devtarget + rootpart
+    devboot = devtarget + partboot
+    devroot = devtarget + partroot
     if result.stdout.find('genboot') < 0:
-        if not wiped and not ask_ok('CREATE boot partition ' + bootpart):
+        if not wiped and not ask_ok('CREATE boot partition ' + partboot):
             cancel()
         run_shell_command('parted --script ' + devtarget +
                           ' mkpart primary ' + bootstart + ' ' + bootend)
         run_shell_command('parted --script ' + devtarget +
-                          " name " + bootpart + " 'genboot'")
+                          " name " + partboot + " 'genboot'")
         run_shell_command('parted --script ' + devtarget +
-                          ' set ' + bootpart + ' boot on')
+                          ' set ' + partboot + ' boot on')
         run_shell_command('mkfs.vfat -n genboot ' + devboot)
     if result.stdout.find('genroot') < 0:
-        if not wiped and not ask_ok('CREATE root partition ' + rootpart):
+        if not wiped and not ask_ok('CREATE root partition ' + partroot):
             cancel()
         run_shell_command('parted --script ' + devtarget +
                           ' mkpart primary ' + bootend + ' 100%')
         run_shell_command('parted --script ' + devtarget +
-                          " name " + rootpart + " 'genroot'")
+                          " name " + partroot + " 'genroot'")
         run_shell_command('mkfs.' + rootfs + ' genroot ' + devroot)
         result = run_shell_command('parted ' + devtarget + ' print')
     result = run_shell_command('parted ' + devtarget + ' print')
@@ -147,11 +147,11 @@ def acquire_stage3(gentootime):
     print('---------------------------')
     return os.path.join(filepath, filenamefinal)
 
-def establish_stage3(rootpart, pathmount, gentootime):
+def establish_stage3(devroot, pathmount, gentootime):
     print('...establishing stage3...')
     print('---------------------------')
     run_shell_command('umount ' + pathmount, abort_on_error=False)
-    result = run_shell_command('mount ' + rootpart + ' ' + pathmount, abort_on_error=False)
+    result = run_shell_command('mount ' + devroot + ' ' + pathmount, abort_on_error=False)
     if result.returncode and not 'already mounted' in result.stderr:
         abort(result.stderr)
     setdiff = (set(
@@ -206,7 +206,7 @@ def acquire_portage(pathmount, gentoodate):
     filespec = filepath + filename
     os.makedirs(filepath, mode=755, exist_ok=True)
     filenamefinal = first_file_found_matching(filepath, filere)
-    if filenamefinal == '':
+    if not filenamefinal:
         site = 'https://ftp.rnl.tecnico.ulisboa.pt/pub/gentoo/gentoo-distfiles/snapshots/'
         url = site + filename
         run_shell_command('wget -P ' + filepath + ' ' + url, capture=False)
@@ -245,11 +245,10 @@ def prepare_portage(pathmount, gentoodate):
         #rsync://umbriel.br.ext.planetunix.net/gentoo/"
     print('-----------------------')
 
-def perform_chroot(dirmount):
+def perform_chroot(pathmount):
     print('...establishing chroot...')
     print('-------------------------')
-    if dirmount in set(os.listdir('/mnt')):
-        pathmount = '/mnt/' + dirmount
+    if os.path.isdir(pathmount):
         print('......chrooting to '+ pathmount)
         ## !!! arch-chroot does this:
         ##fileresolv = 'resolv.conf'
@@ -277,12 +276,11 @@ def main():
     check_platform('Linux')
     gentoodate = '20251130'
     gentootime = gentoodate + 'T164554Z'
-    dirmount = 'gentoo'
-    pathmount = '/mnt/' + dirmount
-    (bootpart, rootpart) = establish_partitions()
-    establish_stage3(rootpart, pathmount, gentootime)
+    pathmount = '/mnt/gentoo'
+    (devboot, devroot) = establish_partitions()
+    establish_stage3(devroot, pathmount, gentootime)
     prepare_portage(pathmount, gentoodate)
-    perform_chroot(dirmount)
+    perform_chroot(pathmount)
     print('=================================================')
     print('...completed ENTIRE setup of Gentoo installation.')
 
