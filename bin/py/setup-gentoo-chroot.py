@@ -78,29 +78,37 @@ def establish_grub(devboot):
     print('-----------------------')
     result = run_shell_command('which grub-install', abort_on_error=False)
     if not '/grub-install' in result.stdout:
-        run_shell_command('emerge --ask sys-boot/grub',         capture=False)
-    run_shell_command('mkdir -p /efi',                          capture=False)
-    run_shell_command('mount '+devboot+' /efi',                 capture=False)
+        run_shell_command('emerge --ask sys-boot/grub',        capture=False)
+    run_shell_command('mkdir -p /efi',                         capture=False)
+    run_shell_command('mount '+devboot+' /efi',                capture=False)
     if not os.path.isfile('/efi/EFI/gentoo/grubx64.efi'):
-        run_shell_command('grub-install --efi-directory=/efi',  capture=False)
+        run_shell_command('grub-install --efi-directory=/efi', capture=False)
     print('-----------------------')
 
 def establish_kernel():
     print('...establishing kernel...')
     print('-------------------------')
-    run_shell_command('echo "sys-kernel/installkernel dracut grub" >/etc/portage/package.use/installkernel')
-    run_shell_command('emerge sys-kernel/installkernel',      capture=False)
-    run_shell_command('emerge sys-kernel/gentoo-kernel-bin',  capture=False)
-    ask_ok('continue')
+    if not os.path.isfile('/etc/portage/package.use/installkernel'):
+        run_shell_command('echo "sys-kernel/installkernel dracut grub" >/etc/portage/package.use/installkernel')
+        run_shell_command('emerge sys-kernel/installkernel',     capture=False)
+    if not os.path.isfile('/boot/vmlinuz-6.12.58-gentoo-dist'):
+        run_shell_command('emerge sys-kernel/gentoo-kernel-bin', capture=False)
     print('-----------------------')
 
 def establish_boot(devroot):
     print('...establishing boot...')
     print('-----------------------')
-    run_shell_command('ls -alFh /boot',                         capture=False)
-    run_shell_command('rm -f /boot/grub/grub.cfg',              capture=False)
-    run_shell_command('grub-mkconfig -o /boot/grub/grub.cfg',   capture=False)
+    run_shell_command('ls -alFh /boot',                       capture=False)
+    run_shell_command('rm -f /boot/grub/grub.cfg',            capture=False)
+    run_shell_command('grub-mkconfig -o /boot/grub/grub.cfg', capture=False)
+    ### TODO: NEED TO ADD rootflags=noflush_merge TO ALL linux ... root=...
     print('-----------------------')
+
+def establish_user_root():
+    print('...establishing user root...')
+    print('----------------------------')
+    run_shell_command("echo -e 'r00+R00+\\nr00+R00+' | (passwd root)", capture=False)
+    print('----------------------------')
 
 def main():
     print('==========================================')
@@ -112,8 +120,9 @@ def main():
     devboot = '/dev/sda1'
     establish_grub(devboot)
     establish_kernel()
-    #devroot = '/dev/sda4'
-    #establish_boot(devroot)
+    devroot = '/dev/sda4'
+    establish_boot(devroot)
+    establish_user_root()
     print('=================================================')
     print('...completed CHROOT setup of Gentoo installation.')
 
