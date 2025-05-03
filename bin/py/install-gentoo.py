@@ -250,7 +250,7 @@ def perform_chroot(pathmount):
     print('-------------------------')
     if os.path.isdir(pathmount):
         print('......chrooting to '+ pathmount)
-        filescriptafter = 'setup-gentoo-chroot.py'
+        filescriptafter = 'install-gentoo-chroot.py'
         pathscriptafterthis = './' + filescriptafter
         pathscriptafterroot = '/root/' + filescriptafter
         if not os.path.isfile(pathscriptafterthis):
