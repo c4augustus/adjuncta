@@ -73,6 +73,34 @@ def establish_portage(profile):
         run_shell_command('eselect profile set '+profile, capture=False)
     print('--------------------------')
 
+def establish_firmware():
+    print('...establishing firmware...')
+    print('---------------------------')
+    fileportpacklicense = '/etc/portage/package.license'
+    if not os.path.isfile(fileportpacklicense):
+        run_shell_command('echo "sys-kernel/linux-firmware linux-fw-redistributable" >'+fileportpacklicense, capture=False)
+        run_shell_command('emerge --ask --noreplace sys-kernel/linux-firmware', capture=False)
+    print('---------------------------')
+
+def establish_networking():
+    print('...establishing networking...')
+    print('-----------------------------')
+    filemodulesnet = '/etc/modules-load.d/networking.conf'
+    if not os.path.isfile(filemodulesnet):
+        run_shell_command('echo iwlwifi >'+filemodulesnet,          capture=False)
+    result = run_shell_command('which iw',                   abort_on_error=False)
+    if not '/iw' in result.stdout:
+        run_shell_command('emerge --noreplace net-wireless/iw',     capture=False)
+    result = run_shell_command('which wpa_supplicant',       abort_on_error=False)
+    if not '/wpa_supplicant' in result.stdout:
+        run_shell_command('USE=tkip emerge --noreplace net-wireless/wpa_supplicant', capture=False)
+        run_shell_command('rc-update add wpa_supplication default', capture=False)
+    result = run_shell_command('which dhcpcd',               abort_on_error=False)
+    if not '/dhcpcd' in result.stdout:
+        run_shell_command('emerge --noreplace net-misc/dhcpcd',     capture=False)
+        run_shell_command('rc-update add dhcpcd default',           capture=False)
+    print('-----------------------------')
+
 def establish_grub(devboot):
     print('...establishing grub...')
     print('-----------------------')
@@ -101,7 +129,7 @@ def establish_boot(devroot):
     run_shell_command('ls -alFh /boot',                       capture=False)
     run_shell_command('rm -f /boot/grub/grub.cfg',            capture=False)
     run_shell_command('grub-mkconfig -o /boot/grub/grub.cfg', capture=False)
-    ### TODO: NEED TO ADD rootflags=noflush_merge TO ALL linux ... root=...
+    print('### TODO: WE NEED TO ADD TO grub.cfg ENTRY linux: rootflags=noflush_merge BECAUSE f2fs FAILS WITHOUT IT')
     print('-----------------------')
 
 def establish_user_root():
@@ -117,6 +145,8 @@ def main():
     check_platform('Linux')
     establish_chrooted('gentoo')
     establish_portage('default/linux/amd64/23.0/desktop')
+    establish_firmware()
+    establish_networking()
     devboot = '/dev/sda1'
     establish_grub(devboot)
     establish_kernel()
