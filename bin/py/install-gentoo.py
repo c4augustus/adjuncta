@@ -147,27 +147,32 @@ def acquire_stage3(gentootime):
     print('---------------------------')
     return os.path.join(filepath, filenamefinal)
 
-def establish_stage3(devroot, pathmount, gentootime):
-    print('...establishing stage3...')
-    print('---------------------------')
-    run_shell_command('umount ' + pathmount, abort_on_error=False)
-    result = run_shell_command('mount ' + devroot + ' ' + pathmount, abort_on_error=False)
+def mount_installation_root(devroot, pathmount):
+    print('...mounting installation root...')
+    print('--------------------------------')
+    run_shell_command('umount '+pathmount, abort_on_error=False)
+    result = run_shell_command('mount '+devroot+' '+pathmount, abort_on_error=False)
     if result.returncode and not 'already mounted' in result.stderr:
         abort(result.stderr)
+    print('--------------------------------')
+
+def establish_stage3(pathmount, gentootime):
+    print('...establishing stage3...')
+    print('---------------------------')
     setdiff = (set(
         ['bin', 'boot', 'dev', 'etc', 'home', 'lib', 'lib64',
         'media', 'mnt', 'opt', 'proc', 'root',
         'run', 'sbin', 'sys', 'tmp', 'usr', 'var'])
         - set(sorted(os.listdir(pathmount))))
     if setdiff != set():
-        print('......missing ' + pathmount + ' subdirectories: ' + str(setdiff))
+        print('......missing '+pathmount+' subdirectories: ' + str(setdiff))
         print('......extracting stage3...')
         result = run_shell_command('tar -xpvf ' + acquire_stage3(gentootime) +
-            " --xattrs-include='*.*' --numeric-owner -C, --directory=" + pathmount,
+            " --xattrs-include='*.*' --numeric-owner -C, --directory="+pathmount,
             capture=False)
         if not result.returncode:
-            run_shell_command('cp -av /root/z ' + pathmount + '/root', capture=False)
-            run_shell_command('ls -alF ' + pathmount, capture=False)
+            run_shell_command('cp -av /root/z '+pathmount+'/root', capture=False)
+            run_shell_command('ls -alF '+pathmount, capture=False)
     print('---------------------------')
 
 def establish_config_file_entry(filespec, key, value):
@@ -215,6 +220,13 @@ def acquire_portage(pathmount, gentoodate):
             abort('failed to find or download ' + filename)
     print('-----------------------')
     return os.path.join(filepath, filenamefinal)
+
+def configure_etc(pathmount):
+    print('...configuring /etc...')
+    print('----------------------')
+    run_shell_command('echo opinguim >'+pathmount+'/etc/hostname', capture=False)
+    establish_config_file_entry(pathmount+'/etc/conf.d/keymaps', 'keymap', '"pt-latin1"')
+    print('----------------------')
 
 def prepare_portage(pathmount, gentoodate):
     print('...preparing portage...')
@@ -272,7 +284,9 @@ def main():
     gentootime = gentoodate + 'T164554Z'
     pathmount = '/mnt/gentoo'
     (devboot, devroot) = establish_partitions()
-    establish_stage3(devroot, pathmount, gentootime)
+    mount_installation_root(devroot, pathmount)
+    establish_stage3(pathmount, gentootime)
+    configure_etc(pathmount)
     prepare_portage(pathmount, gentoodate)
     perform_chroot(pathmount)
     print('=================================================')
