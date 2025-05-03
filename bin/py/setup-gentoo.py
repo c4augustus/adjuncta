@@ -250,20 +250,14 @@ def perform_chroot(pathmount):
     print('-------------------------')
     if os.path.isdir(pathmount):
         print('......chrooting to '+ pathmount)
-        ## !!! arch-chroot does this:
-        ##fileresolv = 'resolv.conf'
-        ##if not fileresolv in os.listdir(pathmount + '/etc'):
-        ##    pathresolv = '/etc/' + fileresolv
-        ##    run_shell_command('cp ' + pathresolv + ' ' + pathmount + pathresolv, capture=False)
         filescriptafter = 'setup-gentoo-chroot.py'
         pathscriptafterthis = './' + filescriptafter
         pathscriptafterroot = '/root/' + filescriptafter
         if not os.path.isfile(pathscriptafterthis):
             abort('will not chroot without companion script ' + pathscriptafterthis)
-        ##if not os.path.isfile(pathscriptafterroot):
         run_shell_command('cp ' + pathscriptafterthis
                 + ' ' + pathmount + pathscriptafterroot, capture=False)
-        run_shell_command('cp /etc/resolv.conf '+pathmount+'/etc', capture=False)
+        run_shell_command('cp /etc/resolv.conf '+pathmount+'/etc', abort_on_error=False, capture=False)
         run_shell_command('arch-chroot '+pathmount+' '
             ### TODO: WHY DO WE NEED THIS?:
             #+ ' /bin/bash --rcfile <(echo ". /etc/.bashrc; . /etc/profile; export PS1="(chroot) ${PS1}"; python '
