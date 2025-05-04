@@ -53,17 +53,23 @@ def run_shell_command(command, capture=True, abort_on_error=True):
         abort(result.stderr)
     return result
 
+def emerge_missing(exe,package):
+    result = run_shell_command('which '+exe, abort_on_error=False)
+    if result.stdout:
+        print(result.stdout)
+    else:
+        run_shell_command('emerge '+package, capture=False)
+
 def establish_chrooted(subdirmount):
+    print('---------------------------')
     print('...establishing chrooted...')
-    print('-------------------------')
     if not subdirmount in set(os.listdir('/mnt')):
         run_shell_command('. /etc/profile',               capture=False)
         run_shell_command('export PS1="(chroot) ${PS1}"', capture=False)
-    print('-------------------------')
 
 def establish_portage(profile):
-    print('...establishing portage...')
     print('--------------------------')
+    print('...establishing portage...')
     result = run_shell_command('eselect profile show', abort_on_error=False)
     print(result.stdout)
     if result.stderr:
@@ -71,77 +77,82 @@ def establish_portage(profile):
         run_shell_command('emerge-webrsync 2>out-emerge-webrsync.err', capture=False)
     if not profile in result.stdout:
         run_shell_command('eselect profile set '+profile, capture=False)
-    print('--------------------------')
 
 def establish_firmware():
-    print('...establishing firmware...')
     print('---------------------------')
+    print('...establishing firmware...')
     fileportpacklicense = '/etc/portage/package.license'
     if not os.path.isfile(fileportpacklicense):
         run_shell_command('echo "sys-kernel/linux-firmware linux-fw-redistributable" >'+fileportpacklicense, capture=False)
         run_shell_command('emerge --ask --noreplace sys-kernel/linux-firmware', capture=False)
-    print('---------------------------')
 
 def establish_networking():
+    print('-----------------------------')
     print('...establishing networking...')
-    print('-----------------------------')
-    filemodulesnet = '/etc/modules-load.d/networking.conf'
-    if not os.path.isfile(filemodulesnet):
-        run_shell_command('echo iwlwifi >'+filemodulesnet,          capture=False)
-    result = run_shell_command('which iw',                   abort_on_error=False)
-    if not '/iw' in result.stdout:
-        run_shell_command('emerge --noreplace net-wireless/iw',     capture=False)
-    result = run_shell_command('which wpa_supplicant',       abort_on_error=False)
+    ## !!! we don't seem to need this for iwlwifi to get loaded,
+    ## !!! possibly because wpa_supplicant is added to runlevel default
+    ##dirmodulesload = '/etc/modules-load.d'
+    ##if not os.path.isdir(dirmodulesload):
+    ##    run_shell_command('mkdir /etc/modules-load.d')
+    ##filemodulesnet = dirmodulesload+'/networking.conf'
+    ##if not os.path.isfile(filemodulesnet):
+    ##    run_shell_command('echo iwlwifi >'+filemodulesnet, capture=False)
+    emerge_missing('iw','net-wireless/iw')
+    result = run_shell_command('which wpa_supplicant', abort_on_error=False)
     if not '/wpa_supplicant' in result.stdout:
-        run_shell_command('USE=tkip emerge --noreplace net-wireless/wpa_supplicant', capture=False)
-        run_shell_command('rc-update add wpa_supplication default', capture=False)
-    result = run_shell_command('which dhcpcd',               abort_on_error=False)
+        run_shell_command('USE=tkip emerge net-wireless/wpa_supplicant', capture=False)
+        run_shell_command('rc-update add wpa_supplication default',      capture=False)
+    result = run_shell_command('which dhcpcd', abort_on_error=False)
     if not '/dhcpcd' in result.stdout:
-        run_shell_command('emerge --noreplace net-misc/dhcpcd',     capture=False)
-        run_shell_command('rc-update add dhcpcd default',           capture=False)
-    print('-----------------------------')
+        run_shell_command('emerge net-misc/dhcpcd',         capture=False)
+        run_shell_command('rc-update add dhcpcd default',   capture=False)
 
 def establish_grub(devboot):
-    print('...establishing grub...')
     print('-----------------------')
-    result = run_shell_command('which grub-install', abort_on_error=False)
-    if not '/grub-install' in result.stdout:
-        run_shell_command('emerge --ask sys-boot/grub',        capture=False)
+    print('...establishing grub...')
+    emerge_missing('grub-install','sys-boot/grub')
     run_shell_command('mkdir -p /efi',                         capture=False)
     run_shell_command('mount '+devboot+' /efi',                capture=False)
     if not os.path.isfile('/efi/EFI/gentoo/grubx64.efi'):
         run_shell_command('grub-install --efi-directory=/efi', capture=False)
-    print('-----------------------')
 
 def establish_kernel():
-    print('...establishing kernel...')
     print('-------------------------')
+    print('...establishing kernel...')
     if not os.path.isfile('/etc/portage/package.use/installkernel'):
         run_shell_command('echo "sys-kernel/installkernel dracut grub" >/etc/portage/package.use/installkernel')
         run_shell_command('emerge sys-kernel/installkernel',     capture=False)
     if not os.path.isfile('/boot/vmlinuz-6.12.58-gentoo-dist'):
         run_shell_command('emerge sys-kernel/gentoo-kernel-bin', capture=False)
-    print('-----------------------')
 
 def establish_boot(devroot):
+    print('-----------------------')
     print('...establishing boot...')
-    print('-----------------------')
-    run_shell_command('ls -alFh /boot',                       capture=False)
-    run_shell_command('rm -f /boot/grub/grub.cfg',            capture=False)
-    run_shell_command('grub-mkconfig -o /boot/grub/grub.cfg', capture=False)
-    print('### TODO: WE NEED TO ADD TO grub.cfg ENTRY linux: rootflags=noflush_merge BECAUSE f2fs FAILS WITHOUT IT')
-    print('-----------------------')
+    filegrub = '/boot/grub/grub.cfg'
+    if not os.path.isfile(filegrub):
+        run_shell_command('ls -alFh /boot',             capture=False)
+        run_shell_command('rm -f '+filegrub,            capture=False)
+        run_shell_command('grub-mkconfig -o '+filegrub, capture=False)
+        print('#########')
+        print('### TODO: YOU NEED TO ADD TO grub.cfg ENTRY linux: rootflags=noflush_merge BECAUSE f2fs FAILS WITHOUT IT')
+        print('#########')
+
+def establish_essentials():
+    print('-----------------------------')
+    print('...establishing essentials...')
+    emerge_missing('vim',     'app-editors/vim')
+    emerge_missing('ansible', 'app-admin/ansible')
 
 def establish_user_root():
+    print('----------------------------')
     print('...establishing user root...')
-    print('----------------------------')
-    run_shell_command("echo -e 'r00+R00+\\nr00+R00+' | (passwd root)", capture=False)
-    print('----------------------------')
+    run_shell_command('rm -fv ~/.bash*', capture=False)
+    run_shell_command('cp -v ~/z/v/a/config/prog/bash/_copy_to_home/.bash* ~/', capture=False)
+    run_shell_command('passwd', capture=False)
 
 def main():
     print('==========================================')
     print('...continuing installation after chroot...')
-    print('==========================================')
     check_platform('Linux')
     establish_chrooted('gentoo')
     establish_portage('default/linux/amd64/23.0/desktop')
@@ -152,8 +163,8 @@ def main():
     establish_kernel()
     devroot = '/dev/sda4'
     establish_boot(devroot)
+    establish_essentials()
     establish_user_root()
-    print('=================================================')
     print('...completed CHROOT setup of Gentoo installation.')
 
 if __name__ == '__main__':
