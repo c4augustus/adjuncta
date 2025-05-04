@@ -10,16 +10,16 @@
 
 # NOTE: Minimal manual steps to get here:
 #
-#       1. browse https://bouncer.gentoo.org/fetch/root/all/releases/amd64/autobuilds/current-admincd-amd64
-#       2. download admincd-amd64-desktop-openrc-...(some date)...iso and iso.sha256
+#       1. browse https://bouncer.gentoo.org/fetch/root/all/releases/amd64/autobuilds/current-install-amd64-minimal
+#       2. download install-amd64-minimal-...(some datetime)...iso and ...iso.sha256
 #       3. validate the iso via: `sha256sum -c ...iso.sha256`
 #       4. burn the .iso file to a USB
-#       5. boot the USB
-#       6. `mount -o remount,rw /mnt/cdrom`
-#       7. `mkdir -p /mnt/cdrom/z/v`
-#       8. `chdir /mnt/cdrom/z/v`
-#       9. `git clone https://gitlab.com/c4augustus/adjuncta`
-#       10. `cd adjuncta/bin/python`
+#       5. boot the USB 2nd partition, 2nd grub entry "Boot LiveCD (kernel: gentoo) (cached)"
+#       6. select keymap when prompted (31 for portugal)
+#       7. `mkdir /z/v; cd z/v`
+#       8. `git clone https://codeberg.org/c4augustus/adjuncta a`
+#       9. `cd a/bin/py`
+#      10. `./install-gentoo.py`
 
 import os
 import platform
@@ -28,7 +28,7 @@ import subprocess
 import sys
 
 def abort(reason):
-    eprint('SETUP ABORTED: ' + reason)
+    eprint('SETUP ABORTED: '+reason)
     sys.exit(-1)
 
 def cancel():
@@ -41,7 +41,7 @@ def eprint(*args, **kwargs):
 # based on https://docs.python.org/2/tutorial/controlflow.html#defining-functions
 def ask_ok(prompt, retries=4, complaint='type y/ye/yes or n/no/nop/nope'):
     while True:
-        ok = input(prompt + '? (y/n): ')
+        ok = input(prompt+'? (y/n): ')
         if ok in ('y', 'ye', 'yes'):
             return True
         if ok in ('n', 'no', 'nop', 'nope'):
@@ -53,27 +53,26 @@ def ask_ok(prompt, retries=4, complaint='type y/ye/yes or n/no/nop/nope'):
 
 def check_platform(nameRequired):
     namePlatform = platform.system()
-    print('...running on platform ' + namePlatform)
+    print('...running on platform '+namePlatform)
     if namePlatform != nameRequired:
-        abort('only supported on ' + nameRequired)
+        abort('only supported on ' +nameRequired)
 
 def run_shell_command(command, capture=True, abort_on_error=True):
-    print('`' + command + '`')
+    print('`'+command+'`')
     result = subprocess.run(command, capture_output=capture, shell=True, text=True)
     if abort_on_error and result.returncode:
         abort(result.stderr)
     return result
 
-def establish_partitions():
+def establish_partitions(devtarget):
+    print('----------------------')
     print('...drive partitions...')
-    print('---------------------------')
     wiped = False
-    devtarget = '/dev/sda' ### TODO: HARDCODED
-    result = run_shell_command('parted ' + devtarget + ' print')
+    result = run_shell_command('parted '+devtarget+' print')
     if result.stdout.find('Partition Table: gpt') < 0:
-        if not wiped and not ask_ok('WIPE and re-partition ' + devtarget + ' to GPT'):
+        if not wiped and not ask_ok('WIPE and re-partition '+devtarget+' to GPT'):
             cancel()
-        run_shell_command('parted --script ' + devtarget + ' mklabel gpt')
+        run_shell_command('parted --script '+devtarget+' mklabel gpt')
         wiped = True
         partboot    = '1'
         bootstart   = '2048s'
@@ -86,30 +85,28 @@ def establish_partitions():
         bootend     = '2156MB'
         partroot    = '4'
         rootfs      = 'f2fs -l'
-    devboot = devtarget + partboot
-    devroot = devtarget + partroot
+    devboot = devtarget+partboot
+    devroot = devtarget+partroot
     if result.stdout.find('genboot') < 0:
-        if not wiped and not ask_ok('CREATE boot partition ' + partboot):
+        if not wiped and not ask_ok('CREATE boot partition '+partboot):
             cancel()
-        run_shell_command('parted --script ' + devtarget +
-                          ' mkpart primary ' + bootstart + ' ' + bootend)
-        run_shell_command('parted --script ' + devtarget +
-                          " name " + partboot + " 'genboot'")
-        run_shell_command('parted --script ' + devtarget +
-                          ' set ' + partboot + ' boot on')
-        run_shell_command('mkfs.vfat -n genboot ' + devboot)
+        run_shell_command('parted --script '+devtarget+
+                          ' mkpart primary '+bootstart+' '+bootend)
+        run_shell_command('parted --script '+devtarget+
+                          " name "+partboot+" 'genboot'")
+        run_shell_command('parted --script '+devtarget+
+                          ' set ' +partboot+' boot on')
+        run_shell_command('mkfs.vfat -n genboot '+devboot)
     if result.stdout.find('genroot') < 0:
-        if not wiped and not ask_ok('CREATE root partition ' + partroot):
+        if not wiped and not ask_ok('CREATE root partition '+partroot):
             cancel()
-        run_shell_command('parted --script ' + devtarget +
-                          ' mkpart primary ' + bootend + ' 100%')
-        run_shell_command('parted --script ' + devtarget +
-                          " name " + partroot + " 'genroot'")
-        run_shell_command('mkfs.' + rootfs + ' genroot ' + devroot)
-        result = run_shell_command('parted ' + devtarget + ' print')
-    result = run_shell_command('parted ' + devtarget + ' print')
+        run_shell_command('parted --script '+devtarget+
+                          ' mkpart primary '+bootend+' 100%')
+        run_shell_command('parted --script '+devtarget+
+                          " name "+partroot+" 'genroot'")
+        run_shell_command('mkfs.'+rootfs+' genroot '+devroot)
+    result = run_shell_command('parted '+devtarget+' print')
     print(result.stdout)
-    print('---------------------------')
     return (devboot,devroot)
 
 def first_file_found_matching(filepath, filename):
@@ -126,39 +123,37 @@ def abspath_of_ancestor_dir(name):
     return apath
 
 def acquire_stage3(gentootime):
+    print('----------------------')
     print('...acquiring stage3...')
-    print('---------------------------')
-    filepath = os.path.dirname(abspath_of_ancestor_dir('v')) + '/u/soft/open/gentoo'
+    filepath = os.path.dirname(abspath_of_ancestor_dir('v'))+'/u/soft/open/gentoo'
     ## !!! no longer matching against any time value
-    ##filename = 'stage3-amd64-desktop-openrc-' + gentoodate + 'T??????Z.tar.xz'
-    ##filere   = '^stage3-amd64-desktop-openrc-' + gentoodate + 'T......Z\.tar\.xz$'
-    filename = 'stage3-amd64-desktop-openrc-' + gentootime + '.tar.xz'
-    filere   = '^stage3-amd64-desktop-openrc-' + gentootime + '\.tar\.xz$'
-    filespec = filepath + filename
+    ##filename =  'stage3-amd64-desktop-openrc-'+gentoodate+'T??????Z.tar.xz'
+    ##filere   = '^stage3-amd64-desktop-openrc-'+gentoodate+'T......Z\\.tar\\.xz$'
+    filename =  'stage3-amd64-desktop-openrc-'+gentootime+'.tar.xz'
+    filere   = '^stage3-amd64-desktop-openrc-'+gentootime+'\\.tar\\.xz$'
+    filespec = filepath+filename
     os.makedirs(filepath, mode=755, exist_ok=True)
     filenamefinal = first_file_found_matching(filepath, filere)
     if filenamefinal == '':
         site = 'https://ftp.rnl.tecnico.ulisboa.pt/pub/gentoo/gentoo-distfiles'
-        url = site + '/releases/amd64/autobuilds/' + gentootime + '/' + filename
-        run_shell_command('wget -P ' + filepath + ' ' + url, capture=False)
+        url = site+'/releases/amd64/autobuilds/'+gentootime+'/'+filename
+        run_shell_command('wget -P '+filepath+' '+url, capture=False)
         filenamefinal = first_file_found_matching(filepath, filere)
         if filenamefinal == '':
-            abort('failed to find or download ' + filename)
-    print('---------------------------')
+            abort('failed to find or download '+filename)
     return os.path.join(filepath, filenamefinal)
 
 def mount_installation_root(devroot, pathmount):
-    print('...mounting installation root...')
     print('--------------------------------')
+    print('...mounting installation root...')
     run_shell_command('umount '+pathmount, abort_on_error=False)
     result = run_shell_command('mount '+devroot+' '+pathmount, abort_on_error=False)
     if result.returncode and not 'already mounted' in result.stderr:
         abort(result.stderr)
-    print('--------------------------------')
 
 def establish_stage3(pathmount, gentootime):
-    print('...establishing stage3...')
     print('---------------------------')
+    print('...establishing stage3...')
     setdiff = (set(
         ['bin', 'boot', 'dev', 'etc', 'home', 'lib', 'lib64',
         'media', 'mnt', 'opt', 'proc', 'root',
@@ -173,10 +168,9 @@ def establish_stage3(pathmount, gentootime):
         if not result.returncode:
             run_shell_command('cp -av /root/z '+pathmount+'/root', capture=False)
             run_shell_command('ls -alF '+pathmount, capture=False)
-    print('---------------------------')
 
 def establish_config_file_entry(filespec, key, value):
-    entry = f'{key}={value}'
+    entry = f'{key}={value}\n'
     replaced = False
     try:
         with open(filespec, "r") as infile:
@@ -195,7 +189,7 @@ def establish_config_file_entry(filespec, key, value):
         lines = []
     if not replaced:
         lines.append(entry)
-    filespecorig = filespec + '.orig'
+    filespecorig = filespec+'.orig'
     if not os.path.isfile(filespecorig):
         os.rename(filespec, filespecorig)
     with open(filespec, "w") as outfile:
@@ -203,36 +197,34 @@ def establish_config_file_entry(filespec, key, value):
     print(f'{filespec}: {entry}')
 
 def acquire_portage(pathmount, gentoodate):
-    print('...acquiring portage...')
     print('-----------------------')
-    filepath = pathmount + '/root/z/u/soft/open/gentoo'
-    filename = 'portage-' + gentoodate + '.tar.xz'
-    filere   = '^portage-' + gentoodate + '\.tar\.xz$'
-    filespec = filepath + filename
+    print('...acquiring portage...')
+    filepath = pathmount+'/root/z/u/soft/open/gentoo'
+    filename =  'portage-'+gentoodate+'.tar.xz'
+    filere   = '^portage-'+gentoodate+'\\.tar\\.xz$'
+    filespec = filepath+filename
     os.makedirs(filepath, mode=755, exist_ok=True)
     filenamefinal = first_file_found_matching(filepath, filere)
     if not filenamefinal:
         site = 'https://ftp.rnl.tecnico.ulisboa.pt/pub/gentoo/gentoo-distfiles/snapshots/'
         url = site + filename
-        run_shell_command('wget -P ' + filepath + ' ' + url, capture=False)
+        run_shell_command('wget -P '+filepath+' '+url, capture=False)
         filenamefinal = first_file_found_matching(filepath, filere)
         if filenamefinal == '':
             abort('failed to find or download ' + filename)
-    print('-----------------------')
     return os.path.join(filepath, filenamefinal)
 
 def configure_etc(pathmount):
-    print('...configuring /etc...')
     print('----------------------')
+    print('...configuring /etc...')
     run_shell_command('echo opinguim >'+pathmount+'/etc/hostname', capture=False)
     establish_config_file_entry(pathmount+'/etc/conf.d/keymaps', 'keymap', '"pt-latin1"')
-    print('----------------------')
 
 def prepare_portage(pathmount, gentoodate):
-    print('...preparing portage...')
     print('-----------------------')
-    pathusr = pathmount + '/usr'
-    pathportage = pathusr + '/portage'
+    print('...preparing portage...')
+    pathusr = pathmount+'/usr'
+    pathportage = pathusr+'/portage'
     try:
       setdiff = (set(
           ['acct-group', 'acct-user',
@@ -242,55 +234,49 @@ def prepare_portage(pathmount, gentoodate):
     except FileNotFoundError:
         setdiff = set(['.'])
     if setdiff != set():
-        print('......missing ' + pathportage + ' subdirectories: ' + str(setdiff))
+        print('......missing '+pathportage+' subdirectories: '+str(setdiff))
         print('......extracting portage...')
         run_shell_command('tar -xpvf ' + acquire_portage(pathmount, gentoodate) +
-            " --xattrs-include='*.*' --numeric-owner -C, --directory=" + pathusr,
+            " --xattrs-include='*.*' --numeric-owner -C, --directory="+pathusr,
             capture=False)
-    run_shell_command('ls ' + pathportage, capture=False)
-    pathmakeconf = pathmount + '/etc/portage/make.conf'
+    run_shell_command('ls '+pathportage, capture=False)
+    pathmakeconf = pathmount+'/etc/portage/make.conf'
     establish_config_file_entry(pathmakeconf, 'GENTOO_MIRRORS',
-        #ftp://ftp.rnl.tecnico.ulisboa.pt/pub/gentoo/gentoo-distfiles/ \
-        #http://ftp.rnl.tecnico.ulisboa.pt/pub/gentoo/gentoo-distfiles/ \
         '"https://ftp.rnl.tecnico.ulisboa.pt/pub/gentoo/gentoo-distfiles/"')
-        #rsync://ftp.rnl.tecnico.ulisboa.pt/pub/gentoo/gentoo-distfiles/ \
-        #rsync://umbriel.br.ext.planetunix.net/gentoo/"
-    print('-----------------------')
 
 def perform_chroot(pathmount):
-    print('...establishing chroot...')
     print('-------------------------')
+    print('...establishing chroot...')
     if os.path.isdir(pathmount):
-        print('......chrooting to '+ pathmount)
+        print('......chrooting to '+pathmount)
         filescriptafter = 'install-gentoo-chroot.py'
-        pathscriptafterthis = './' + filescriptafter
-        pathscriptafterroot = '/root/' + filescriptafter
+        pathscriptafterthis = './'+filescriptafter
+        pathscriptafterroot = '/root/'+filescriptafter
         if not os.path.isfile(pathscriptafterthis):
-            abort('will not chroot without companion script ' + pathscriptafterthis)
-        run_shell_command('cp ' + pathscriptafterthis
-                + ' ' + pathmount + pathscriptafterroot, capture=False)
+            abort('will not chroot without companion script '+pathscriptafterthis)
+        run_shell_command('cp '+pathscriptafterthis
+                +' '+pathmount+pathscriptafterroot, capture=False)
         run_shell_command('cp /etc/resolv.conf '+pathmount+'/etc', abort_on_error=False, capture=False)
         run_shell_command('arch-chroot '+pathmount+' '
             ### TODO: WHY DO WE NEED THIS?:
             #+ ' /bin/bash --rcfile <(echo ". /etc/.bashrc; . /etc/profile; export PS1="(chroot) ${PS1}"; python '
-            + pathscriptafterroot, capture=False)
-    print('-------------------------')
+            +pathscriptafterroot, capture=False)
 
 def main():
-    print('Setup Gentoo installation...')
-    print('============================')
+    print('==============================')
+    print('Installing Gentoo GNU/Linux...')
     check_platform('Linux')
     gentoodate = '20251130'
-    gentootime = gentoodate + 'T164554Z'
+    gentootime = gentoodate+'T164554Z'
     pathmount = '/mnt/gentoo'
-    (devboot, devroot) = establish_partitions()
+    (devboot, devroot) = establish_partitions('/dev/sda')
     mount_installation_root(devroot, pathmount)
     establish_stage3(pathmount, gentootime)
     configure_etc(pathmount)
     prepare_portage(pathmount, gentoodate)
     perform_chroot(pathmount)
-    print('=================================================')
-    print('...completed ENTIRE setup of Gentoo installation.')
+    print('...completed ENTIRE installation of Gentoo GNU/Linux.')
+    print('=====================================================')
 
 if __name__ == '__main__':
     main()
