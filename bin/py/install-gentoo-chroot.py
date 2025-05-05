@@ -139,9 +139,10 @@ def establish_boot(devroot):
 def establish_essentials():
     print('-----------------------------')
     print('...establishing essentials...')
-    emerge_missing('git',     'dev-vcs/git')
-    emerge_missing('vim',     'app-editors/vim')
-    emerge_missing('ansible', 'app-admin/ansible')
+    emerge_missing('git',       'dev-vcs/git')
+    emerge_missing('keychain',  'net-misc/keychain')
+    emerge_missing('vim',       'app-editors/vim')
+    emerge_missing('ansible',   'app-admin/ansible')
 
 def config_user(diradjuncta, dirhome):
     run_shell_command('cp -v '+diradjuncta+'/config/prog/bash/_copy_to_home/.bash* '+dirhome, capture=False)
