@@ -12,6 +12,7 @@
 
 import os
 import platform
+import pathlib
 import re
 import subprocess
 import sys
@@ -89,14 +90,12 @@ def establish_firmware():
 def establish_networking():
     print('-----------------------------')
     print('...establishing networking...')
-    ## !!! we don't seem to need this for iwlwifi to get loaded,
-    ## !!! possibly because wpa_supplicant is added to runlevel default
-    ##dirmodulesload = '/etc/modules-load.d'
-    ##if not os.path.isdir(dirmodulesload):
-    ##    run_shell_command('mkdir /etc/modules-load.d')
-    ##filemodulesnet = dirmodulesload+'/networking.conf'
-    ##if not os.path.isfile(filemodulesnet):
-    ##    run_shell_command('echo iwlwifi >'+filemodulesnet, capture=False)
+    dirmodulesload = '/etc/modules-load.d'
+    if not os.path.isdir(dirmodulesload):
+        run_shell_command('mkdir /etc/modules-load.d')
+    filemodulesnet = dirmodulesload+'/networking.conf'
+    if not os.path.isfile(filemodulesnet):
+        run_shell_command('echo iwlwifi >'+filemodulesnet, capture=False)
     emerge_missing('iw','net-wireless/iw')
     result = run_shell_command('which wpa_supplicant', abort_on_error=False)
     if not '/wpa_supplicant' in result.stdout:
@@ -140,15 +139,34 @@ def establish_boot(devroot):
 def establish_essentials():
     print('-----------------------------')
     print('...establishing essentials...')
+    emerge_missing('git',     'dev-vcs/git')
     emerge_missing('vim',     'app-editors/vim')
     emerge_missing('ansible', 'app-admin/ansible')
 
-def establish_user_root():
+def config_user(diradjuncta, dirhome):
+    run_shell_command('cp -v '+diradjuncta+'/config/prog/bash/_copy_to_home/.bash* '+dirhome, capture=False)
+    run_shell_command('cp -v '+diradjuncta+'/config/prog/vim/_copy_to_home/.*vim* ' +dirhome, capture=False)
+    run_shell_command('passwd', capture=False)
+
+def establish_user_root(subdiradjuncta):
     print('----------------------------')
     print('...establishing user root...')
-    run_shell_command('rm -fv ~/.bash*', capture=False)
-    run_shell_command('cp -v ~/z/v/a/config/prog/bash/_copy_to_home/.bash* ~/', capture=False)
-    run_shell_command('passwd', capture=False)
+    config_user('~/'+subdiradjuncta, '~/')
+
+def establish_user(subdiradjuncta,user,userid,groups):
+    print('--------------------------------')
+    print('...establishing user '+user+'...')
+    result = run_shell_command(
+        'useradd '+user+' -u '+userid
+        +(' -G '+groups if groups else ''), abort_on_error=False)
+    if result.stderr and not 'exists' in result.stderr:
+        abort(result.stderr)
+    dirhome   = '/home/'+user
+    dirparent = dirhome+'/'+pathlib.Path(subdiradjuncta).parent.as_posix()
+    run_shell_command('mkdir -p '+dirparent,                    capture=False)
+    run_shell_command('cp -av ~/'+subdiradjuncta+' '+dirparent, capture=False)
+    run_shell_command('chown -R '+user+':'+user+' '+dirhome,    capture=False)
+    config_user(dirhome+'/'+subdiradjuncta, dirhome)
 
 def main():
     print('==========================================')
@@ -164,7 +182,10 @@ def main():
     devroot = '/dev/sda4'
     establish_boot(devroot)
     establish_essentials()
-    establish_user_root()
+    subdiradjuncta = 'z/v/a'
+    establish_user_root(subdiradjuncta)
+    establish_user(     subdiradjuncta, 'fazedo', '1111', 'wheel')
+    establish_user(     subdiradjuncta, 'humano', '2222', '')
     print('...completed CHROOT setup of Gentoo installation.')
 
 if __name__ == '__main__':
