@@ -54,12 +54,12 @@ def run_shell_command(command, capture=True, abort_on_error=True):
         abort(result.stderr)
     return result
 
-def emerge_missing(exe,package):
+def emerge_missing(exe, package, use):
     result = run_shell_command('which '+exe, abort_on_error=False)
     if result.stdout:
         print(result.stdout)
     else:
-        run_shell_command('emerge '+package, capture=False)
+        run_shell_command('USE="'+use+'" emerge '+package, capture=False)
 
 def establish_chrooted(subdirmount):
     print('---------------------------')
@@ -96,7 +96,7 @@ def establish_networking():
     filemodulesnet = dirmodulesload+'/networking.conf'
     if not os.path.isfile(filemodulesnet):
         run_shell_command('echo iwlwifi >'+filemodulesnet, capture=False)
-    emerge_missing('iw','net-wireless/iw')
+    emerge_missing('iw','net-wireless/iw','')
     result = run_shell_command('which wpa_supplicant', abort_on_error=False)
     if not '/wpa_supplicant' in result.stdout:
         run_shell_command('USE=tkip emerge net-wireless/wpa_supplicant', capture=False)
@@ -109,7 +109,7 @@ def establish_networking():
 def establish_grub(devboot):
     print('-----------------------')
     print('...establishing grub...')
-    emerge_missing('grub-install','sys-boot/grub')
+    emerge_missing('grub-install','sys-boot/grub','')
     run_shell_command('mkdir -p /efi',                         capture=False)
     run_shell_command('mount '+devboot+' /efi',                capture=False)
     if not os.path.isfile('/efi/EFI/gentoo/grubx64.efi'):
@@ -139,10 +139,13 @@ def establish_boot(devroot):
 def establish_essentials():
     print('-----------------------------')
     print('...establishing essentials...')
-    emerge_missing('git',       'dev-vcs/git')
-    emerge_missing('keychain',  'net-misc/keychain')
-    emerge_missing('vim',       'app-editors/vim')
-    emerge_missing('ansible',   'app-admin/ansible')
+    emerge_missing('git',       'dev-vcs/git'       ,'')
+    emerge_missing('keychain',  'net-misc/keychain' ,'')
+    emerge_missing('vim',       'app-editors/vim'   ,'')
+    emerge_missing('ansible',   'app-admin/ansible' ,'')
+    emerge_missing('seatd',     'sys-auth/seat'     ,'builtin server')
+    run_shell_command('rc-update add seatd default', capture=False)
+        # ^ note: seatd provides permission for users in group "seat" to use Wayland
 
 def config_user(diradjuncta, dirhome):
     run_shell_command('cp -v '+diradjuncta+'/config/prog/bash/_copy_to_home/.bash* '+dirhome, capture=False)
@@ -157,9 +160,7 @@ def establish_user_root(subdiradjuncta):
 def establish_user(subdiradjuncta,user,userid,groups):
     print('--------------------------------')
     print('...establishing user '+user+'...')
-    result = run_shell_command(
-        'useradd '+user+' -u '+userid
-        +(' -G '+groups if groups else ''), abort_on_error=False)
+    result = run_shell_command('useradd '+user+' -u '+userid+' -G '+groups, abort_on_error=False)
     if result.stderr and not 'exists' in result.stderr:
         abort(result.stderr)
     dirhome   = '/home/'+user
@@ -185,8 +186,8 @@ def main():
     establish_essentials()
     subdiradjuncta = 'z/v/a'
     establish_user_root(subdiradjuncta)
-    establish_user(     subdiradjuncta, 'fazedo', '1111', 'wheel')
-    establish_user(     subdiradjuncta, 'humano', '2222', '')
+    establish_user(     subdiradjuncta, 'fazedo', '1111', 'seat,video,wheel')
+    establish_user(     subdiradjuncta, 'humano', '2222', 'seat,video')
     print('...completed CHROOT setup of Gentoo installation.')
 
 if __name__ == '__main__':
