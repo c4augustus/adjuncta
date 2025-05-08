@@ -3,3 +3,9 @@
 export XDG_CONFIG_HOME=$ADJUNCTA_DIR/conf/xdg
 export XDG_RUNTIME_DIR=/tmp
   # ^ Wayland cannot open sockets without this
+# Gentoo keymap for Portugal:
+if [      -f /etc/conf.d/keymaps ]; then
+  if [ $(cat /etc/conf.d/keymaps | grep 'keymap="pt') ]; then
+    export XKB_DEFAULT_LAYOUT=pt
+  fi
+fi
